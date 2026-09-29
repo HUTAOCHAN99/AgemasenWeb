@@ -7,22 +7,33 @@
 <p id="err" class="err" role="alert"></p><button class="btn" id="go">Masuk</button></section>
 <section id="dash" hidden>
 <div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><h1 style="font-size:2rem;margin:0">Statistik bot</h1><button class="btn ghost" id="out">Keluar</button></div>
-<p class="muted" id="sub">Data 7 hari terakhir.</p>
+<p class="muted" id="sub"></p>
 <div class="kpis" id="kpis"></div>
+<div class="panel"><h2>Grup tempat bot berada</h2><div style="overflow-x:auto"><table class="tbl" id="groups"></table></div></div>
+<div class="panel"><h2>User yang PC bot</h2><div style="overflow-x:auto"><table class="tbl" id="users"></table></div></div>
 <div class="grid2"><div class="panel"><h2>Command per hari</h2><div class="bars" id="bars"></div></div>
-<div class="panel"><h2>Command terpopuler</h2><table class="tbl" id="top"></table></div></div></section></main>
+<div class="panel"><h2>Command terpopuler</h2><table class="tbl" id="top"></table></div></div></section>
+</main>
 <script>
 const $=id=>document.getElementById(id);
+const esc=v=>String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const when=t=>t?new Date(t).toLocaleString("id-ID",{timeZone:"Asia/Jakarta",dateStyle:"medium",timeStyle:"short"}):"-";
+const up=s=>{const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);return (d?d+" hari ":"")+(h?h+" jam ":"")+m+" menit"};
 async function load(){
   const r=await fetch("/api/stats");
   if(r.status===401){$("dash").hidden=true;$("login").hidden=false;return}
   const d=await r.json();$("login").hidden=true;$("dash").hidden=false;
   if(!r.ok){$("sub").textContent=d.error;return}
-  const k=[["Hari ini",d.today],["7 hari",d.week],["Grup aktif",d.groups],["Error",d.week?Math.round(d.errors/d.week*100)+"%":"0%"],["Rata-rata",d.avgMs+" ms"]];
+  $("sub").textContent=(d.botOnline?"Bot terhubung":"Bot belum terhubung ke WhatsApp")+" · uptime "+up(d.uptimeSec)+" · command dihitung 7 hari terakhir.";
+  const k=[["Grup",d.groups.length],["Total anggota",d.totalMembers],["User PC",d.users.length],["Command hari ini",d.today],["Command 7 hari",d.week]];
   $("kpis").innerHTML=k.map(([l,v])=>'<div class="kpi"><b>'+v+'</b>'+l+'</div>').join("");
+  $("groups").innerHTML='<tr><th>Nama grup</th><th>Anggota</th><th>Command 7 hari</th><th>Status bot</th></tr>'+
+    (d.groups.map(g=>'<tr><td>'+esc(g.name)+'</td><td>'+g.members+'</td><td>'+g.cmd7+'</td><td>'+(g.disabled?"Nonaktif":"Aktif")+'</td></tr>').join("")||'<tr><td colspan="4">Belum ada data grup.</td></tr>');
+  $("users").innerHTML='<tr><th>Nama</th><th>Nomor</th><th>Pesan</th><th>Terakhir chat</th><th>Status</th></tr>'+
+    (d.users.map(u=>'<tr><td>'+esc(u.name||"-")+'</td><td>+'+esc(u.number)+'</td><td>'+u.count+'</td><td>'+when(u.lastSeen)+'</td><td>'+(u.blocked?"Diblokir":"Aktif")+'</td></tr>').join("")||'<tr><td colspan="5">Belum ada yang PC bot.</td></tr>');
   const max=Math.max(1,...d.daily.map(x=>x.n));
-  $("bars").innerHTML=d.daily.map(x=>'<i title="'+x.d+': '+x.n+'" style="height:'+Math.round(x.n/max*100)+'%"></i>').join("");
-  $("top").innerHTML='<tr><th>Command</th><th>Dipakai</th><th>Error</th></tr>'+d.top.map(t=>'<tr><td><code>'+t.command.replace(/</g,"&lt;")+'</code></td><td>'+t.n+'</td><td>'+t.err+'</td></tr>').join("");
+  $("bars").innerHTML=d.daily.map(x=>'<i title="'+esc(x.d)+': '+x.n+'" style="height:'+Math.round(x.n/max*100)+'%"></i>').join("");
+  $("top").innerHTML='<tr><th>Command</th><th>Dipakai</th></tr>'+d.top.map(t=>'<tr><td><code>'+esc(t.command)+'</code></td><td>'+t.n+'</td></tr>').join("");
 }
 async function login(){
   $("err").textContent="";
