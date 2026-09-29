@@ -1,0 +1,168 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ag-ink: #08070d;
+  --color-ag-ink-2: #0d0a14;
+  --color-ag-violet: #8b5cf6;
+  --color-ag-magenta: #c026d3;
+  --color-ag-pink: #f472b6;
+  --color-ag-muted: #a1a1aa;
+  --color-ag-line: rgb(255 255 255 / 0.1);
+
+  --font-display: "Dela Gothic One", "Arial Black", "Hiragino Sans", system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans Variable", "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+
+  --animate-float: float 5.5s ease-in-out infinite;
+  --animate-glow: glow 9s ease-in-out infinite;
+  --animate-blink: blink 2.4s ease-in-out infinite;
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  @keyframes glow {
+    0%, 100% { transform: scale(1); opacity: 0.85; }
+    50% { transform: scale(1.06); opacity: 1; }
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.25; }
+  }
+  @keyframes drift {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(6vmax, 4vmax, 0); }
+  }
+}
+
+@layer base {
+  html {
+    background: var(--color-ag-ink);
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    font-family: var(--font-sans);
+    color: #fff;
+    overflow-x: clip;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: var(--color-ag-magenta); color: #fff; }
+  :focus-visible {
+    outline: 2px solid var(--color-ag-pink);
+    outline-offset: 3px;
+  }
+  section[id] { scroll-margin-top: 4rem; }
+}
+
+@layer components {
+  .shell {
+    margin-inline: auto;
+    max-width: 1440px;
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 40rem) { .shell { padding-inline: 2rem; } }
+  @media (min-width: 64rem) { .shell { padding-inline: 3rem; } }
+
+  /* Judul section besar */
+  .display-h {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    font-size: clamp(2.25rem, 7.4vw, 5.25rem);
+  }
+
+  /* Wordmark hero: offset ungu keras seperti misregistrasi cetak poster */
+  .wordmark {
+    font-size: clamp(2.5rem, 12.4vw, 6.5rem);
+    line-height: 0.86;
+    letter-spacing: -0.03em;
+    text-shadow: 0.04em 0.04em 0 rgb(139 92 246 / 0.55);
+  }
+  @media (min-width: 64rem) {
+    .wordmark { font-size: min(8.6vw, 8.75rem); }
+  }
+
+  /* Sudut terpotong ala UI game */
+  .cut {
+    --c: 12px;
+    clip-path: polygon(
+      0 0, calc(100% - var(--c)) 0, 100% var(--c),
+      100% 100%, var(--c) 100%, 0 calc(100% - var(--c))
+    );
+  }
+  .btn-ghost {
+    position: relative;
+    background: rgb(255 255 255 / 0.28);
+    transition: background-color 0.2s;
+  }
+  .btn-ghost::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    background: var(--color-ag-ink);
+    clip-path: polygon(
+      0 0, calc(100% - var(--c) + 1px) 0, 100% calc(var(--c) - 1px),
+      100% 100%, calc(var(--c) - 1px) 100%, 0 calc(100% - var(--c) + 1px)
+    );
+  }
+  .btn-ghost:hover { background: var(--color-ag-violet); }
+
+  .grid-lines {
+    background-image:
+      linear-gradient(to right, rgb(255 255 255 / 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(255 255 255 / 0.05) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: radial-gradient(ellipse 75% 70% at 32% 42%, #000 0%, transparent 75%);
+  }
+
+  .mask-fade-b {
+    mask-image: linear-gradient(to bottom, #000 82%, transparent 100%);
+  }
+
+  .skip-link {
+    position: fixed;
+    left: 1rem;
+    top: -4rem;
+    z-index: 100;
+    background: #fff;
+    color: #08070d;
+    padding: 0.6rem 1rem;
+    font-weight: 700;
+    font-size: 0.85rem;
+    transition: top 0.2s;
+  }
+  .skip-link:focus { top: 1rem; }
+
+  /* Latar bergerak sangat pelan */
+  .atmos {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    background: linear-gradient(180deg, #08070d 0%, #0d0a14 55%, #08070d 100%);
+  }
+  .atmos i {
+    position: absolute;
+    border-radius: 9999px;
+    will-change: transform;
+  }
+  .atmos i:nth-child(1) {
+    width: 70vmax; height: 70vmax; left: -28vmax; top: -32vmax;
+    background: radial-gradient(closest-side, rgb(139 92 246 / 0.2), transparent 70%);
+    animation: drift 40s ease-in-out infinite alternate;
+  }
+  .atmos i:nth-child(2) {
+    width: 60vmax; height: 60vmax; right: -28vmax; bottom: -28vmax;
+    background: radial-gradient(closest-side, rgb(192 38 211 / 0.14), transparent 70%);
+    animation: drift 52s ease-in-out infinite alternate-reverse;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .animate-float, .animate-glow, .animate-blink, .atmos i {
+    animation: none !important;
+  }
+}
