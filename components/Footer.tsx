@@ -3,7 +3,8 @@
 import { useLanguage } from "@/components/LanguageProvider";
 import { navLinks } from "@/lib/site";
 
-export function Footer() {
+export function Footer({ home = true }: { home?: boolean }) {
+  const base = home ? "" : "/";
   const { t } = useLanguage();
 
   return (
@@ -19,7 +20,7 @@ export function Footer() {
             {navLinks.map((link) => (
               <li key={link.key}>
                 <a
-                  href={link.href}
+                  href={link.external ? link.href : base + link.href}
                   {...(link.external
                     ? { target: "_blank", rel: "noopener noreferrer" }
                     : {})}

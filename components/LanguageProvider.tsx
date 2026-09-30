@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import {
   createContext,
   useCallback,
@@ -29,6 +30,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   // Server & render pertama selalu memakai bahasa default supaya tidak terjadi
   // hydration mismatch; pilihan tersimpan dibaca setelah mount.
   const [lang, setLangState] = useState<Lang>(DEFAULT_LANG);
+  const pathname = usePathname();
 
   useEffect(() => {
     try {
@@ -39,15 +41,21 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Sinkronkan <html lang>, judul tab, dan meta description dengan bahasa aktif.
+  // Sinkronkan <html lang>, judul tab, dan meta description dengan bahasa aktif
+  // (judul & description landing hanya di "/").
   useEffect(() => {
-    const { meta } = dictionaries[lang];
+    const { meta, admin } = dictionaries[lang];
     document.documentElement.lang = lang;
-    document.title = meta.title;
-    document
-      .querySelector('meta[name="description"]')
-      ?.setAttribute("content", meta.description);
-  }, [lang]);
+    if (pathname === "/") {
+      document.title = meta.title;
+      document
+        .querySelector('meta[name="description"]')
+        ?.setAttribute("content", meta.description);
+    } else {
+      // Halaman lain (admin) tidak memakai judul landing page.
+      document.title = admin.metaTitle;
+    }
+  }, [lang, pathname]);
 
   const setLang = useCallback((next: Lang) => {
     setLangState(next);

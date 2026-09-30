@@ -19,7 +19,12 @@ function LogoMark() {
   );
 }
 
-export function Navbar() {
+// home=false dipakai di halaman selain landing (mis. admin): tautan section
+// diarahkan ke "/#section" supaya tetap berfungsi dari halaman mana pun.
+export function Navbar({ home = true }: { home?: boolean }) {
+  const base = home ? "" : "/";
+  const hrefOf = (l: { href: string; external?: boolean }) =>
+    l.external ? l.href : base + l.href;
   const { t } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -54,7 +59,7 @@ export function Navbar() {
         className="shell flex h-16 items-center justify-between gap-3 lg:gap-6"
       >
         <a
-          href="#top"
+          href={`${base}#top`}
           className="flex items-center gap-3"
           onClick={() => setOpen(false)}
         >
@@ -73,7 +78,7 @@ export function Navbar() {
           {navLinks.map((link) => (
             <li key={link.key}>
               <a
-                href={link.href}
+                href={hrefOf(link)}
                 {...(link.external
                   ? { target: "_blank", rel: "noopener noreferrer" }
                   : {})}
@@ -126,7 +131,7 @@ export function Navbar() {
               {navLinks.map((link) => (
                 <li key={link.key} className="border-b border-ag-line">
                   <a
-                    href={link.href}
+                    href={hrefOf(link)}
                     {...(link.external
                       ? { target: "_blank", rel: "noopener noreferrer" }
                       : {})}

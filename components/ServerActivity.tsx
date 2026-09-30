@@ -42,7 +42,7 @@ const POLL_MS = 5000;
 const MAX_POINTS = 40;
 
 // 7900 -> "7,9rb" (id) / "7.9k" (en). Di bawah 1000 ditulis apa adanya.
-function compact(n: number, lang: Lang) {
+export function compact(n: number, lang: Lang) {
   if (n < 1000) return String(Math.round(n));
   const v = (n / 1000).toFixed(1).replace(/\.0$/, "");
   return lang === "id" ? `${v.replace(".", ",")}rb` : `${v}k`;
@@ -65,14 +65,14 @@ function smoothPath(values: number[], w: number, h: number, top = 8) {
 }
 
 // Byte -> "1021.62 MB" atau "1.24 GB" (2 desimal).
-function bytes(b: number) {
+export function bytes(b: number) {
   return b >= 1024 ** 3
     ? `${(b / 1024 ** 3).toFixed(2)} GB`
     : `${(b / 1024 ** 2).toFixed(2)} MB`;
 }
 
 // Detik -> "1H 23J 16M" (id) / "1d 23h 16m" (en).
-function uptime(sec: number, u: { d: string; h: string; m: string }) {
+export function uptime(sec: number, u: { d: string; h: string; m: string }) {
   const d = Math.floor(sec / 86400);
   const h = Math.floor((sec % 86400) / 3600);
   const m = Math.floor((sec % 3600) / 60);
@@ -81,7 +81,7 @@ function uptime(sec: number, u: { d: string; h: string; m: string }) {
     .join(" ");
 }
 
-function SysCard({
+export function SysCard({
   icon,
   label,
   note,
@@ -125,7 +125,7 @@ function SysCard({
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+export function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="border-b border-r border-ag-line px-5 py-4 sm:px-6 sm:py-5">
       <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-ag-muted">
