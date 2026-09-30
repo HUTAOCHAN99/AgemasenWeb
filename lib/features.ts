@@ -30,3 +30,5 @@ export const features: Feature[] = [
 // Semua command di daftar + !menu.
 export const commandCount =
   features.flatMap((f) => f.commands).length + 1;
+
+export const categoryCount = features.length;

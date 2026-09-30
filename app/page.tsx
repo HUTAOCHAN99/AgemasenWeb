@@ -1,6 +1,7 @@
 import { About } from "@/components/About";
 import { CTA } from "@/components/CTA";
 import { CommandPreview } from "@/components/CommandPreview";
+import { ServerActivity } from "@/components/ServerActivity";
 import { Features } from "@/components/Features";
 import { Footer } from "@/components/Footer";
 import { Hero } from "@/components/Hero";
@@ -22,6 +23,7 @@ export default function Home() {
         <Mascot art="/image/profile.png" />
         <HowToUse />
         <CommandPreview />
+        <ServerActivity />
         <CTA />
       </main>
       <Footer />

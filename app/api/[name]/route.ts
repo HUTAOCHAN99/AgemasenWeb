@@ -4,6 +4,7 @@
 import type { NextRequest } from "next/server";
 import login from "../../../api/login.js";
 import logout from "../../../api/logout.js";
+import pulse from "../../../api/pulse.js";
 import stats from "../../../api/stats.js";
 
 export const runtime = "nodejs";
@@ -21,7 +22,7 @@ type LegacyRes = {
 };
 type LegacyHandler = (req: LegacyReq, res: LegacyRes) => unknown;
 
-const handlers: Record<string, LegacyHandler> = { login, logout, stats };
+const handlers: Record<string, LegacyHandler> = { login, logout, stats, pulse };
 
 async function handle(
   request: NextRequest,
