@@ -22,8 +22,8 @@ const variants = {
   ghost: "btn-ghost text-ag-fg",
 } as const;
 
-// Sengaja memakai <a> biasa (bukan next/link): /home dan /admin adalah
-// halaman HTML statis di luar router Next, jadi butuh navigasi penuh.
+// Sengaja memakai <a> biasa (bukan next/link): /home dan halaman admin
+// adalah HTML statis di luar router Next, jadi butuh navigasi penuh.
 export function Button({
   href,
   variant = "primary",

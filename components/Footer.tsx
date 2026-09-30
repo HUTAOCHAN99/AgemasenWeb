@@ -42,9 +42,6 @@ export function Footer() {
         <div className="shell flex flex-col gap-2 py-6 text-xs text-ag-muted sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} Agemasen.</p>
           <p>{t.footer.madeWith}</p>
-          <a href="/admin" className="hover:text-ag-fg">
-            {t.footer.admin}
-          </a>
         </div>
       </div>
     </footer>

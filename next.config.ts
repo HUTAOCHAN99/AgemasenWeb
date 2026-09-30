@@ -1,13 +1,15 @@
 import type { NextConfig } from "next";
 
 const config: NextConfig = {
-  // Halaman lama (admin & daftar command) tetap berupa HTML statis di public/.
-  // Rewrite ini menjaga URL bersihnya (/admin, /home) tetap bekerja.
-  async rewrites() {
+  // Halaman lama tetap berupa HTML statis di public/.
+  async redirects() {
     return [
-      { source: "/admin", destination: "/admin.html" },
-      { source: "/home", destination: "/home.html" },
+      { source: "/admin", destination: "/", permanent: false },
+      { source: "/admin.html", destination: "/", permanent: false },
     ];
+  },
+  async rewrites() {
+    return [{ source: "/home", destination: "/home.html" }];
   },
 };
 

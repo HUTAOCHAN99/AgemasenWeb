@@ -14,6 +14,7 @@ try {
 
 const PORT = process.env.WEB_PORT || 3001;
 const PUB = path.join(__dirname, "public");
+const ADMIN_PATH = "/agemasenwell123456789";
 const TYPES = { ".html": "text/html; charset=utf-8", ".css": "text/css", ".js": "text/javascript", ".png": "image/png", ".jpg": "image/jpeg", ".svg": "image/svg+xml", ".ico": "image/x-icon" };
 
 http.createServer(async (req, res) => {
@@ -35,11 +36,14 @@ http.createServer(async (req, res) => {
     return;
   }
 
-  // file statis, dengan cleanUrls (/admin -> admin.html)
-  let file = path.join(PUB, p === "/" ? "index.html" : p);
+  if (p === "/admin" || p === "/admin.html") { res.writeHead(404); return res.end("Not found"); }
+
+  // File statis, dengan URL khusus untuk halaman admin.
+  const publicPath = p === ADMIN_PATH ? "/admin.html" : p;
+  let file = path.join(PUB, publicPath === "/" ? "index.html" : publicPath);
   if (!file.startsWith(PUB)) { res.writeHead(403); return res.end(); }
   if (!fs.existsSync(file) && fs.existsSync(file + ".html")) file += ".html";
   if (!fs.existsSync(file) || fs.statSync(file).isDirectory()) { res.writeHead(404); return res.end("Not found"); }
   res.writeHead(200, { "Content-Type": TYPES[path.extname(file)] || "application/octet-stream" });
   fs.createReadStream(file).pipe(res);
-}).listen(PORT, () => console.log(`Web lokal: http://localhost:${PORT}  (admin: /admin)`));
+}).listen(PORT, () => console.log(`Web lokal: http://localhost:${PORT}  (admin: ${ADMIN_PATH})`));
