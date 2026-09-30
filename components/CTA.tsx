@@ -3,7 +3,7 @@ import { MascotArt } from "@/components/ui/MascotArt";
 import { Reveal } from "@/components/ui/Reveal";
 import { site } from "@/lib/site";
 
-export function CTA({ art }: { art: string | null }) {
+export function CTA() {
   return (
     <section id="cta" className="relative isolate overflow-clip border-t border-ag-line">
       <div
@@ -15,14 +15,19 @@ export function CTA({ art }: { art: string | null }) {
         className="animate-glow absolute -left-[10%] top-1/2 -z-10 size-[42rem] max-w-[120vw] -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,rgb(192_38_211/0.35),transparent_70%)]"
       />
 
-      {art && (
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-y-0 right-[-8%] -z-10 hidden w-[42%] opacity-90 md:block"
-        >
-          <MascotArt src={art} alt="" float={false} sizes="40vw" className="absolute inset-0" />
-        </div>
-      )}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-y-0 right-[-3%] -z-10 hidden w-[42%] opacity-90 md:block"
+      >
+        <MascotArt
+          src="/image/eyes.png"
+          alt=""
+          kind="image"
+          float={false}
+          sizes="40vw"
+          className="absolute inset-0"
+        />
+      </div>
 
       <div className="shell py-24 lg:py-36">
         <Reveal className="max-w-[56rem]">

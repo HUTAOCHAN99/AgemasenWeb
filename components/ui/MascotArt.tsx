@@ -1,6 +1,11 @@
+"use client";
+
+import Image from "next/image";
+
 type MascotArtProps = {
   src: string | null;
   alt: string;
+  kind?: "video" | "image";
   priority?: boolean;
   sizes?: string;
   float?: boolean;
@@ -74,7 +79,9 @@ function Placeholder() {
 export function MascotArt({
   src,
   alt,
+  kind = "video",
   priority,
+  sizes,
   float = true,
   className = "absolute inset-0",
 }: MascotArtProps) {
@@ -82,7 +89,16 @@ export function MascotArt({
     <div className={className}>
       <Halo />
       <div className={`absolute inset-0 ${float ? "animate-float" : ""}`}>
-        {src ? (
+        {src && kind === "image" ? (
+          <Image
+            src={src}
+            alt={alt}
+            fill
+            preload={priority}
+            sizes={sizes}
+            className="object-contain object-bottom"
+          />
+        ) : src ? (
           <video
             src={src}
             autoPlay
@@ -90,6 +106,9 @@ export function MascotArt({
             muted
             playsInline
             preload={priority ? "auto" : "metadata"}
+            onLoadedMetadata={(event) => {
+              event.currentTarget.playbackRate = 0.8;
+            }}
             aria-label={alt}
             role="img"
             className="h-full w-full object-contain object-bottom"

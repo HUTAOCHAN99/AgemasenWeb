@@ -19,10 +19,10 @@ export default function Home() {
         <Hero art={art} />
         <About />
         <Features />
-        <Mascot art={art} />
+        <Mascot art="/image/profile.png" />
         <HowToUse />
         <CommandPreview />
-        <CTA art={art} />
+        <CTA />
       </main>
       <Footer />
     </>

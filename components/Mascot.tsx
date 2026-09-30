@@ -43,6 +43,7 @@ export function Mascot({ art }: { art: string | null }) {
             <MascotArt
               src={art}
               alt="Special Week, karakter Uma Musume yang menjadi maskot Agemasen"
+              kind="image"
               sizes="(min-width: 1024px) 50vw, 92vw"
               className="absolute inset-0 pt-10"
             />
