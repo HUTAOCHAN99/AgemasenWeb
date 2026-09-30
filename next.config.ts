@@ -8,9 +8,6 @@ const config: NextConfig = {
       { source: "/admin.html", destination: "/", permanent: false },
     ];
   },
-  async rewrites() {
-    return [{ source: "/home", destination: "/home.html" }];
-  },
 };
 
 export default config;

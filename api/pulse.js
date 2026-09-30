@@ -18,6 +18,22 @@ module.exports = async (req, res) => {
     // dan kartunya disembunyikan di halaman (tidak ada angka karangan).
     const m = d.messages || {};
     const s = d.sessions || {};
+    const sy = d.system || {};
+    const system = d.system
+      ? {
+          cpuPercent: num(sy.cpuPercent),
+          cpuModel: sy.cpuModel ? String(sy.cpuModel).slice(0, 80) : null,
+          cpuCores: num(sy.cpuCores),
+          totalMem: num(sy.totalMem),
+          heapUsed: num(sy.heapUsed),
+          heapTotal: num(sy.heapTotal),
+          external: num(sy.external),
+          arrayBuffers: num(sy.arrayBuffers),
+          node: sy.node ? String(sy.node).slice(0, 20) : null,
+          os: sy.os ? String(sy.os).slice(0, 20) : null,
+          arch: sy.arch ? String(sy.arch).slice(0, 20) : null,
+        }
+      : null;
     const top = Array.isArray(d.top) ? d.top.slice(0, 4) : [];
 
     res.setHeader("Cache-Control", "public, s-maxage=5, stale-while-revalidate=10");
@@ -30,6 +46,8 @@ module.exports = async (req, res) => {
       sessionsActive: num(s.active),
       sessionsTotal: num(s.total),
       today: num(d.today),
+      uptimeSec: num(d.uptimeSec),
+      system,
       load: d.system ? num(d.system.cpuPercent) : null,
       top: top.map((t) => ({ command: String(t.command || ""), n: num(t.n) || 0 })),
       series: Array.isArray(m.series) ? m.series.slice(-40).map((n) => num(n) || 0) : null,

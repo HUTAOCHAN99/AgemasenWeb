@@ -203,12 +203,6 @@ export function FeatureTutorial({
                   </li>
                 ))}
             </ul>
-            <a
-              href="/home"
-              className="mt-4 inline-block text-xs text-ag-muted underline underline-offset-4 transition hover:text-ag-fg"
-            >
-              {tt.allCommands}
-            </a>
           </div>
         </motion.div>
       </div>

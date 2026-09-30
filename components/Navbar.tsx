@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { NavClock } from "@/components/NavClock";
 import { LanguageSwitch } from "@/components/LanguageSwitch";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useLanguage } from "@/components/LanguageProvider";
@@ -40,6 +41,7 @@ export function Navbar() {
   const solid = scrolled || open;
 
   return (
+    <>
     <header
       className={`fixed inset-x-0 top-0 z-50 border-b transition-[background-color,border-color,backdrop-filter] duration-300 ${
         solid
@@ -143,5 +145,7 @@ export function Navbar() {
         )}
       </AnimatePresence>
     </header>
+    {!open && <NavClock />}
+    </>
   );
 }

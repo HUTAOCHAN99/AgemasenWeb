@@ -54,11 +54,7 @@ export function CTA() {
               <Button href={site.githubUrl} external variant="ghost" size="lg" className="w-full sm:w-auto">
                 {t.cta.github}
               </Button>
-            ) : (
-              <Button href="/home" variant="ghost" size="lg" className="w-full sm:w-auto">
-                {t.cta.viewCommands}
-              </Button>
-            )}
+            ) : null}
           </div>
         </Reveal>
       </div>

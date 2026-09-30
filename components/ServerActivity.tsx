@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { Clock, Cpu, Hexagon, Layers, MemoryStick, Monitor, Server } from "lucide-react";
 import { useLanguage } from "@/components/LanguageProvider";
+import { LiveTime } from "@/components/NavClock";
 import { Reveal } from "@/components/ui/Reveal";
 import { categoryCount, commandCount } from "@/lib/features";
 import type { Lang } from "@/lib/i18n";
@@ -18,6 +20,20 @@ type Pulse = {
   sessionsTotal: number | null;
   today: number | null;
   load: number | null;
+  uptimeSec: number | null;
+  system: {
+    cpuPercent: number | null;
+    cpuModel: string | null;
+    cpuCores: number | null;
+    totalMem: number | null;
+    heapUsed: number | null;
+    heapTotal: number | null;
+    external: number | null;
+    arrayBuffers: number | null;
+    node: string | null;
+    os: string | null;
+    arch: string | null;
+  } | null;
   top: { command: string; n: number }[];
   series: number[] | null;
 };
@@ -46,6 +62,67 @@ function smoothPath(values: number[], w: number, h: number, top = 8) {
     d += ` C${mx} ${py} ${mx} ${y} ${x} ${y}`;
   }
   return { line: d, area: `${d} L${w} ${h} L0 ${h} Z` };
+}
+
+// Byte -> "1021.62 MB" atau "1.24 GB" (2 desimal).
+function bytes(b: number) {
+  return b >= 1024 ** 3
+    ? `${(b / 1024 ** 3).toFixed(2)} GB`
+    : `${(b / 1024 ** 2).toFixed(2)} MB`;
+}
+
+// Detik -> "1H 23J 16M" (id) / "1d 23h 16m" (en).
+function uptime(sec: number, u: { d: string; h: string; m: string }) {
+  const d = Math.floor(sec / 86400);
+  const h = Math.floor((sec % 86400) / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  return [d ? `${d}${u.d}` : "", d || h ? `${h}${u.h}` : "", `${m}${u.m}`]
+    .filter(Boolean)
+    .join(" ");
+}
+
+function SysCard({
+  icon,
+  label,
+  note,
+  value,
+  bar,
+  className = "",
+}: {
+  icon: ReactNode;
+  label: string;
+  note?: string;
+  value: string;
+  bar?: number | null;
+  className?: string;
+}) {
+  return (
+    <div className={`rounded-[6px] border border-ag-line bg-ag-ink-2/80 p-5 ${className}`}>
+      <p className="flex items-center gap-2.5 text-[13px] font-bold">
+        <span aria-hidden className="text-ag-muted">{icon}</span>
+        {label}
+      </p>
+      {bar != null && (
+        <span
+          role="progressbar"
+          aria-label={label}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.round(bar)}
+          className="mt-3 block h-2 overflow-hidden rounded-full bg-ag-fg/10"
+        >
+          <span
+            className="block h-full rounded-full bg-ag-pink transition-[width] duration-700"
+            style={{ width: `${Math.min(100, Math.max(bar > 0 ? 2 : 0, bar))}%` }}
+          />
+        </span>
+      )}
+      {note && <p className="mt-3 truncate text-xs text-ag-muted">{note}</p>}
+      <p className="mt-3 font-display text-2xl leading-tight tabular-nums sm:text-[1.7rem]">
+        {value}
+      </p>
+    </div>
+  );
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
@@ -133,6 +210,19 @@ export function ServerActivity() {
   stats.push({ label: a.categories, value: String(categoryCount) });
   if (pulse?.top[0]) stats.push({ label: a.topCommand, value: pulse.top[0].command });
 
+  const sys = pulse?.system ?? null;
+  const cpu = sys?.cpuPercent != null ? Math.min(100, Math.max(0, sys.cpuPercent)) : null;
+  const heapPct =
+    sys?.heapUsed != null && sys.heapTotal ? (sys.heapUsed / sys.heapTotal) * 100 : null;
+  const osText = sys?.os
+    ? `${sys.os.charAt(0).toUpperCase()}${sys.os.slice(1)}${sys.arch ? ` (${sys.arch.toUpperCase()})` : ""}`
+    : null;
+  const nodeText = sys?.node ? (sys.node.startsWith("v") ? sys.node : `v${sys.node}`) : null;
+  const cpuNote = sys?.cpuModel
+    ? `${sys.cpuModel}${sys.cpuCores ? ` (${sys.cpuCores} ${a.cores})` : ""}`
+    : undefined;
+  const ic = "size-[18px]";
+
   const load = pulse?.load != null ? Math.min(100, Math.max(0, pulse.load)) : null;
 
   return (
@@ -163,6 +253,7 @@ export function ServerActivity() {
                 className="rounded-full border border-ag-line px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-ag-muted"
               >
                 {status}
+                <LiveTime className="ml-2 border-l border-ag-line pl-2 text-ag-fg" />
               </span>
             </div>
 
@@ -319,6 +410,65 @@ export function ServerActivity() {
             )}
           </div>
         </Reveal>
+
+        {sys && !failed && (
+          <Reveal delay={0.05}>
+            <div className="mt-14 text-center">
+              <h3 className="font-display text-2xl sm:text-3xl">{a.sysTitle}</h3>
+              <p className="mt-2 text-sm text-ag-muted">{a.sysSub}</p>
+            </div>
+            <div className="mt-8 grid gap-4 md:grid-cols-2">
+              {cpu != null && (
+                <SysCard
+                  icon={<Cpu className={ic} />}
+                  label={a.cpu}
+                  bar={cpu}
+                  note={cpuNote}
+                  value={`${Math.round(cpu)}%`}
+                />
+              )}
+              {sys.heapUsed != null && sys.heapTotal != null && (
+                <SysCard
+                  icon={<MemoryStick className={ic} />}
+                  label={a.heap}
+                  bar={heapPct}
+                  note={sys.totalMem ? `${a.totalMem} : ${bytes(sys.totalMem)}` : undefined}
+                  value={`${bytes(sys.heapUsed)} / ${bytes(sys.heapTotal)}`}
+                />
+              )}
+              {sys.external != null && (
+                <SysCard
+                  icon={<Server className={ic} />}
+                  label={a.external}
+                  note={a.externalNote}
+                  value={bytes(sys.external)}
+                />
+              )}
+              {sys.arrayBuffers != null && (
+                <SysCard
+                  icon={<Layers className={ic} />}
+                  label={a.arrayBuffer}
+                  value={bytes(sys.arrayBuffers)}
+                />
+              )}
+            </div>
+            <div className="mt-4 grid gap-4 md:grid-cols-3">
+              {pulse?.uptimeSec != null && (
+                <SysCard
+                  icon={<Clock className={ic} />}
+                  label={a.uptime}
+                  value={uptime(pulse.uptimeSec, { d: a.uDay, h: a.uHour, m: a.uMin })}
+                />
+              )}
+              {nodeText && (
+                <SysCard icon={<Hexagon className={ic} />} label={a.node} value={nodeText} />
+              )}
+              {osText && (
+                <SysCard icon={<Monitor className={ic} />} label={a.os} value={osText} />
+              )}
+            </div>
+          </Reveal>
+        )}
       </div>
     </section>
   );
