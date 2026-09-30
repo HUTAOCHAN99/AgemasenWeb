@@ -1,14 +1,19 @@
 "use client";
 
+import { useCallback, useState } from "react";
+import { FeatureTutorial } from "@/components/FeatureTutorial";
 import { useLanguage } from "@/components/LanguageProvider";
 import { FeatureCard } from "@/components/ui/FeatureCard";
 import { Lines } from "@/components/ui/Lines";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { features } from "@/lib/features";
+import type { FeatureKey } from "@/lib/i18n";
 
 export function Features() {
   const { t } = useLanguage();
+  const [active, setActive] = useState<FeatureKey | null>(null);
+  const close = useCallback(() => setActive(null), []);
 
   return (
     <section id="features" className="relative border-t border-ag-line py-24 lg:py-36">
@@ -31,12 +36,18 @@ export function Features() {
           {features.map((feature, i) => (
             <li key={feature.key}>
               <Reveal delay={(i % 3) * 0.07} className="h-full">
-                <FeatureCard feature={feature} index={i} />
+                <FeatureCard
+                  feature={feature}
+                  index={i}
+                  onOpen={() => setActive(feature.key)}
+                />
               </Reveal>
             </li>
           ))}
         </ul>
       </div>
+
+      <FeatureTutorial activeKey={active} onSelect={setActive} onClose={close} />
     </section>
   );
 }

@@ -78,10 +78,18 @@ const id = {
     label: "Features",
     heading: ["One bot.", "Many things", "to do."],
     noteBefore:
-      "Setiap kartu menuju daftar command-nya. Untuk versi paling baru, ketik ",
+      "Klik kartu untuk melihat cara pakai tiap command. Untuk versi paling baru, ketik ",
     noteAfter: " di chat.",
-    cardLink: "lihat daftar command",
+    cardLink: "lihat cara pakai",
     commandList: "Command",
+    tutorial: {
+      label: "Cara pakai",
+      example: "Contoh",
+      tip: "Catatan",
+      others: "Fitur lainnya",
+      close: "Tutup",
+      allCommands: "Lihat semua command",
+    },
     items: {
       sticker: {
         title: "Sticker & Meme",
@@ -243,10 +251,18 @@ const en: Dict = {
     label: "Features",
     heading: ["One bot.", "Many things", "to do."],
     noteBefore:
-      "Each card leads to its command list. For the latest version, type ",
+      "Click a card to see how each command works. For the latest version, type ",
     noteAfter: " in the chat.",
-    cardLink: "view command list",
+    cardLink: "see how to use it",
     commandList: "Command",
+    tutorial: {
+      label: "How to use",
+      example: "Example",
+      tip: "Note",
+      others: "Other features",
+      close: "Close",
+      allCommands: "See all commands",
+    },
     items: {
       sticker: {
         title: "Sticker & Meme",

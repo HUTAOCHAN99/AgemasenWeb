@@ -19,10 +19,10 @@ export type Feature = {
 
 // Sumber: daftar command di public/home.html.
 export const features: Feature[] = [
-  { key: "sticker", commands: ["!meme", "!smeme", "!sbrat", "!schat"], icon: Sticker },
+  { key: "sticker", commands: ["!s", "!meme", "!smeme", "!sbrat", "!schat", "!togif", "!toimg"], icon: Sticker },
   { key: "downloader", commands: ["!dl", "!dlr"], icon: Download },
   { key: "hd", commands: ["!hd"], icon: ImageUpscale },
-  { key: "search", commands: ["!img", "!id", "!pin", "!gif"], icon: Images },
+  { key: "search", commands: ["!img", "!pin", "!gif", "!next", "!id"], icon: Images },
   { key: "articles", commands: ["!artikel", "!ringkas", "!lupain"], icon: Newspaper },
   { key: "chat", commands: [], icon: MessageCircleHeart },
 ];
