@@ -1,10 +1,43 @@
-<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Admin · Agemasen Bot</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap"><link rel="stylesheet" href="/style.css"><script>(function(){try{var t=localStorage.getItem("agemasen-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}})()</script></head><body>
+<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Admin · Agemasen Bot</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap"><link rel="stylesheet" href="/style.css"><script>(function(){try{var t=localStorage.getItem("agemasen-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}})()</script><style>
+[hidden]{display:none!important}
+.auth{display:grid;grid-template-columns:1fr 1fr;max-width:900px;margin:32px auto;background:var(--card);border:2px solid var(--line);border-radius:22px;overflow:hidden}
+.auth-art{background:var(--mint);display:flex;align-items:flex-end;justify-content:center;min-height:460px;overflow:hidden}
+.auth-art img{width:88%;max-width:380px;height:auto;display:block;transform:translateY(6%)}
+.auth-form{padding:40px 36px;display:flex;flex-direction:column;justify-content:center}
+.auth-form h1{font-size:1.9rem;margin:0 0 6px;letter-spacing:-.01em}
+.auth-form .muted{margin-bottom:26px;font-size:.95rem}
+.field{margin-bottom:16px}
+.field label{display:block;font-weight:700;font-size:.92rem;margin-bottom:6px}
+.inp{display:flex;border:2px solid var(--line);border-radius:12px;background:var(--bg);overflow:hidden}
+.inp:focus-within{border-color:var(--pink)}
+.inp svg{flex:none;width:18px;height:18px;margin:0 0 0 14px;align-self:center;color:var(--muted)}
+.inp input{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font:inherit;padding:12px 14px;outline:0}
+.inp input::placeholder{color:var(--muted);opacity:.7}
+.inp button{border:0;background:transparent;color:var(--muted);padding:0 14px;cursor:pointer;font:inherit;font-weight:700;font-size:.85rem}
+.inp button:hover{color:var(--ink)}
+.auth-form .btn{width:100%;border-radius:12px;padding:13px 22px;margin-top:6px}
+.auth-form .btn[disabled]{opacity:.6;cursor:wait}
+.err{color:var(--pink);font-weight:700;font-size:.92rem;min-height:1.4em;margin:0 0 6px}
+@media(max-width:760px){.auth{grid-template-columns:1fr;margin:16px auto}.auth-art{min-height:0;height:190px}.auth-art img{width:auto;height:150%;transform:translateY(8%)}.auth-form{padding:28px 22px}}
+</style>
+</head><body>
 <nav class="wrap"><b><a href="/">Agemasen</a></b></nav>
 <main class="wrap">
-<section id="login" class="panel" hidden style="max-width:380px;margin:40px auto"><h2>Masuk admin</h2>
-<p class="muted">Masukkan password untuk melihat statistik bot.</p>
-<label for="pw" class="muted">Password</label><input id="pw" type="password" autocomplete="current-password">
-<p id="err" class="err" role="alert"></p><button class="btn" id="go">Masuk</button></section>
+<section id="login" class="auth" hidden>
+<div class="auth-art" aria-hidden="true"><img src="/image/profile.png" alt=""></div>
+<form class="auth-form" id="loginForm" novalidate>
+<h1>Masuk admin</h1>
+<p class="muted">Masukkan username dan password untuk melihat statistik bot.</p>
+<div class="field"><label for="user">Username</label>
+<div class="inp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+<input id="user" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Masukkan username" required></div></div>
+<div class="field"><label for="pw">Password</label>
+<div class="inp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+<input id="pw" name="password" type="password" autocomplete="current-password" placeholder="Masukkan password" required>
+<button type="button" id="eye" aria-controls="pw" aria-pressed="false">Tampilkan</button></div></div>
+<p id="err" class="err" role="alert"></p>
+<button class="btn" id="go" type="submit">Masuk</button>
+</form></section>
 <section id="dash" hidden>
 <div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><h1 style="font-size:2rem;margin:0">Statistik bot</h1><button class="btn ghost" id="out">Keluar</button></div>
 <p class="muted" id="sub"></p>
@@ -39,12 +72,21 @@ async function load(){
   $("bars").innerHTML=d.daily.map(x=>'<i title="'+esc(x.d)+': '+x.n+'" style="height:'+Math.round(x.n/max*100)+'%"></i>').join("");
   $("top").innerHTML='<tr><th>Command</th><th>Dipakai</th></tr>'+d.top.map(t=>'<tr><td><code>'+esc(t.command)+'</code></td><td>'+t.n+'</td></tr>').join("");
 }
-async function login(){
-  $("err").textContent="";
-  const r=await fetch("/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:$("pw").value})});
-  if(r.ok){$("pw").value="";load()}else{$("err").textContent=(await r.json()).error}
+async function login(e){
+  e.preventDefault();
+  const u=$("user").value.trim(),p=$("pw").value,err=$("err"),btn=$("go");
+  err.textContent="";
+  if(!u||!p){err.textContent=!u?"Username wajib diisi.":"Password wajib diisi.";(!u?$("user"):$("pw")).focus();return}
+  btn.disabled=true;btn.textContent="Memeriksa...";
+  try{
+    const r=await fetch("/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:u,password:p})});
+    if(r.ok){$("pw").value="";await load()}
+    else{err.textContent=(await r.json().catch(()=>({}))).error||"Gagal masuk. Coba lagi.";$("pw").select()}
+  }catch{err.textContent="Tidak bisa terhubung ke server. Coba lagi."}
+  btn.disabled=false;btn.textContent="Masuk";
 }
-$("go").onclick=login;$("pw").onkeydown=e=>e.key==="Enter"&&login();
+$("loginForm").addEventListener("submit",login);
+$("eye").onclick=()=>{const show=$("pw").type==="password";$("pw").type=show?"text":"password";$("eye").textContent=show?"Sembunyikan":"Tampilkan";$("eye").setAttribute("aria-pressed",show)};
 $("out").onclick=async()=>{await fetch("/api/logout");location.reload()};
 load();
 </script></body></html>
