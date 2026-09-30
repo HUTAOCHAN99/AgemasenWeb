@@ -1,14 +1,25 @@
 @import "tailwindcss";
 
-@theme {
-  --color-ag-ink: #08070d;
-  --color-ag-ink-2: #0d0a14;
-  --color-ag-violet: #8b5cf6;
-  --color-ag-magenta: #c026d3;
-  --color-ag-pink: #f472b6;
-  --color-ag-muted: #a1a1aa;
-  --color-ag-line: rgb(255 255 255 / 0.1);
+/* Warna mengikuti tema aktif: nilainya ada di variabel --ag-* di bawah, dan
+   berubah lewat atribut data-theme di <html>. "inline" membuat utilitas
+   (bg-ag-ink, text-ag-fg, ...) membaca variabel itu langsung di elemen yang
+   memakainya, sehingga section dengan data-theme sendiri (mis. CTA) tetap
+   bisa memakai tema berbeda dari halaman. */
+@theme inline {
+  --color-ag-ink: var(--ag-ink);
+  --color-ag-ink-2: var(--ag-ink-2);
+  --color-ag-fg: var(--ag-fg);
+  --color-ag-violet: var(--ag-violet);
+  --color-ag-magenta: var(--ag-magenta);
+  --color-ag-pink: var(--ag-pink);
+  --color-ag-muted: var(--ag-muted);
+  --color-ag-line: var(--ag-line);
+}
 
+/* Varian "light:" untuk penyesuaian yang hanya berlaku di tema terang. */
+@custom-variant light (&:where([data-theme="light"] *));
+
+@theme {
   --font-display: "Dela Gothic One", "Arial Black", "Hiragino Sans", system-ui, sans-serif;
   --font-sans: "Plus Jakarta Sans Variable", "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
 
@@ -34,21 +45,66 @@
   }
 }
 
+/* Dark = tampilan asli & default. Light diaktifkan lewat <html data-theme="light">. */
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+  --ag-ink: #08070d;
+  --ag-ink-2: #0d0a14;
+  --ag-fg: #ffffff;
+  --ag-violet: #8b5cf6;
+  --ag-magenta: #c026d3;
+  --ag-pink: #f472b6;
+  --ag-muted: #a1a1aa;
+  --ag-line: rgb(255 255 255 / 0.1);
+  --ag-grid: rgb(255 255 255 / 0.05);
+  --ag-ghost-border: rgb(255 255 255 / 0.28);
+  --ag-wordmark-shadow: rgb(139 92 246 / 0.55);
+  --ag-atmos-from: #08070d;
+  --ag-atmos-mid: #0d0a14;
+  --ag-blob-1: rgb(139 92 246 / 0.2);
+  --ag-blob-2: rgb(192 38 211 / 0.14);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --ag-ink: #f7f5fc;
+  --ag-ink-2: #ffffff;
+  --ag-fg: #17132b;
+  --ag-violet: #7c3aed;
+  --ag-magenta: #a21caf;
+  --ag-pink: #c4256f;
+  --ag-muted: #5b5678;
+  --ag-line: rgb(23 19 43 / 0.12);
+  --ag-grid: rgb(23 19 43 / 0.06);
+  --ag-ghost-border: rgb(23 19 43 / 0.3);
+  --ag-wordmark-shadow: rgb(124 58 237 / 0.3);
+  --ag-atmos-from: #f7f5fc;
+  --ag-atmos-mid: #ffffff;
+  --ag-blob-1: rgb(139 92 246 / 0.16);
+  --ag-blob-2: rgb(192 38 211 / 0.1);
+}
+
+/* Warna teks harus dipasang ulang di elemen yang mengganti tema sendiri. */
+[data-theme] {
+  color: var(--ag-fg);
+}
+
 @layer base {
   html {
-    background: var(--color-ag-ink);
+    background: var(--ag-ink);
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
   }
   body {
     font-family: var(--font-sans);
-    color: #fff;
+    color: var(--ag-fg);
     overflow-x: clip;
     -webkit-font-smoothing: antialiased;
   }
-  ::selection { background: var(--color-ag-magenta); color: #fff; }
+  ::selection { background: var(--ag-magenta); color: #fff; }
   :focus-visible {
-    outline: 2px solid var(--color-ag-pink);
+    outline: 2px solid var(--ag-pink);
     outline-offset: 3px;
   }
   section[id] { scroll-margin-top: 4rem; }
@@ -77,7 +133,7 @@
     font-size: clamp(2.5rem, 12.4vw, 6.5rem);
     line-height: 0.86;
     letter-spacing: -0.03em;
-    text-shadow: 0.04em 0.04em 0 rgb(139 92 246 / 0.55);
+    text-shadow: 0.04em 0.04em 0 var(--ag-wordmark-shadow);
   }
   @media (min-width: 64rem) {
     .wordmark { font-size: min(8.6vw, 8.75rem); }
@@ -93,25 +149,25 @@
   }
   .btn-ghost {
     position: relative;
-    background: rgb(255 255 255 / 0.28);
+    background: var(--ag-ghost-border);
     transition: background-color 0.2s;
   }
   .btn-ghost::before {
     content: "";
     position: absolute;
     inset: 1px;
-    background: var(--color-ag-ink);
+    background: var(--ag-ink);
     clip-path: polygon(
       0 0, calc(100% - var(--c) + 1px) 0, 100% calc(var(--c) - 1px),
       100% 100%, calc(var(--c) - 1px) 100%, 0 calc(100% - var(--c) + 1px)
     );
   }
-  .btn-ghost:hover { background: var(--color-ag-violet); }
+  .btn-ghost:hover { background: var(--ag-violet); }
 
   .grid-lines {
     background-image:
-      linear-gradient(to right, rgb(255 255 255 / 0.05) 1px, transparent 1px),
-      linear-gradient(to bottom, rgb(255 255 255 / 0.05) 1px, transparent 1px);
+      linear-gradient(to right, var(--ag-grid) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--ag-grid) 1px, transparent 1px);
     background-size: 72px 72px;
     mask-image: radial-gradient(ellipse 75% 70% at 32% 42%, #000 0%, transparent 75%);
   }
@@ -125,8 +181,8 @@
     left: 1rem;
     top: -4rem;
     z-index: 100;
-    background: #fff;
-    color: #08070d;
+    background: var(--ag-fg);
+    color: var(--ag-ink);
     padding: 0.6rem 1rem;
     font-weight: 700;
     font-size: 0.85rem;
@@ -141,7 +197,7 @@
     z-index: -1;
     overflow: hidden;
     pointer-events: none;
-    background: linear-gradient(180deg, #08070d 0%, #0d0a14 55%, #08070d 100%);
+    background: linear-gradient(180deg, var(--ag-atmos-from) 0%, var(--ag-atmos-mid) 55%, var(--ag-atmos-from) 100%);
   }
   .atmos i {
     position: absolute;
@@ -150,12 +206,12 @@
   }
   .atmos i:nth-child(1) {
     width: 70vmax; height: 70vmax; left: -28vmax; top: -32vmax;
-    background: radial-gradient(closest-side, rgb(139 92 246 / 0.2), transparent 70%);
+    background: radial-gradient(closest-side, var(--ag-blob-1), transparent 70%);
     animation: drift 40s ease-in-out infinite alternate;
   }
   .atmos i:nth-child(2) {
     width: 60vmax; height: 60vmax; right: -28vmax; bottom: -28vmax;
-    background: radial-gradient(closest-side, rgb(192 38 211 / 0.14), transparent 70%);
+    background: radial-gradient(closest-side, var(--ag-blob-2), transparent 70%);
     animation: drift 52s ease-in-out infinite alternate-reverse;
   }
 }

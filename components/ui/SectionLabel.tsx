@@ -16,9 +16,9 @@ export function SectionLabel({
     >
       <span className="tabular-nums text-ag-pink">
         {index}
-        <span className="text-white/30"> / {SECTION_TOTAL}</span>
+        <span className="text-ag-fg/30"> / {SECTION_TOTAL}</span>
       </span>
-      <span aria-hidden className="h-px w-10 bg-white/25 sm:w-14" />
+      <span aria-hidden className="h-px w-10 bg-ag-fg/25 sm:w-14" />
       <span>{label}</span>
     </div>
   );

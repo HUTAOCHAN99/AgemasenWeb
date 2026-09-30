@@ -2,6 +2,7 @@
 
 import { motion, type Variants } from "framer-motion";
 import { MessageCircle } from "lucide-react";
+import { useLanguage } from "@/components/LanguageProvider";
 import { Button } from "@/components/ui/Button";
 import { MascotArt } from "@/components/ui/MascotArt";
 import { commandCount } from "@/lib/features";
@@ -19,13 +20,15 @@ const rise: Variants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.7, ease } },
 };
 
-const meta = [
-  `${commandCount}+ commands`,
-  "WhatsApp bot",
-  "Community project",
-];
-
 export function Hero({ art }: { art: string | null }) {
+  const { t } = useLanguage();
+  const { hero } = t;
+  const meta = [
+    `${commandCount}+ ${hero.metaCommands}`,
+    hero.metaBot,
+    hero.metaCommunity,
+  ];
+
   return (
     <section id="top" className="relative isolate overflow-clip">
       <div
@@ -45,14 +48,14 @@ export function Hero({ art }: { art: string | null }) {
             className="relative z-20 flex flex-wrap items-center gap-x-5 gap-y-3"
           >
             <span className="border border-ag-pink/40 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-ag-pink">
-              Anime community bot
+              {hero.badge}
             </span>
             <span className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-ag-muted">
               <span
                 aria-hidden
                 className="animate-blink size-1.5 rounded-full bg-ag-pink"
               />
-              System ready
+              {hero.status}
             </span>
           </motion.div>
 
@@ -68,18 +71,16 @@ export function Hero({ art }: { art: string | null }) {
               variants={rise}
               className="text-2xl font-extrabold leading-[1.1] tracking-tight sm:text-3xl xl:text-4xl"
             >
-              <span className="block">Your favorite</span>
-              <span className="block">WhatsApp bot,</span>
-              <span className="block text-ag-pink">powered by chaos.</span>
+              <span className="block">{hero.tagline[0]}</span>
+              <span className="block">{hero.tagline[1]}</span>
+              <span className="block text-ag-pink">{hero.tagline[2]}</span>
             </motion.p>
 
             <motion.p
               variants={rise}
               className="mt-5 max-w-[42ch] text-[15px] leading-relaxed text-ag-muted"
             >
-              Bikin stiker, download video, perbesar foto jadi HD, cari gambar
-              dan GIF, sampai ngobrol dengan bot tsundere. Semuanya langsung
-              dari chat WhatsApp.
+              {hero.body}
             </motion.p>
 
             <motion.div
@@ -88,10 +89,10 @@ export function Hero({ art }: { art: string | null }) {
             >
               <Button href={site.waUrl} external size="lg">
                 <MessageCircle className="size-4" aria-hidden />
-                Add to WhatsApp
+                {hero.cta}
               </Button>
               <Button href="#features" variant="ghost" size="lg">
-                Explore features
+                {hero.explore}
               </Button>
             </motion.div>
           </div>
@@ -115,7 +116,7 @@ export function Hero({ art }: { art: string | null }) {
         >
           <MascotArt
             src={art}
-            alt="Special Week, karakter Uma Musume yang menjadi maskot Agemasen"
+            alt={hero.alt}
             priority
             className="mask-fade-b absolute inset-0"
           />
@@ -124,22 +125,22 @@ export function Hero({ art }: { art: string | null }) {
         {/* Dekorasi UI game */}
         <div
           aria-hidden
-          className="pointer-events-none absolute right-12 top-24 z-20 hidden text-right text-[10px] font-semibold uppercase leading-relaxed tracking-[0.22em] text-white/50 lg:block"
+          className="pointer-events-none absolute right-12 top-24 z-20 hidden text-right text-[10px] font-semibold uppercase leading-relaxed tracking-[0.22em] text-ag-fg/50 lg:block"
         >
           <p className="tabular-nums text-ag-pink">01 / 06</p>
-          <p>Featured bot</p>
+          <p>{hero.featured}</p>
         </div>
         <div
           aria-hidden
-          className="pointer-events-none absolute bottom-16 right-3 z-20 hidden items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-white/40 [writing-mode:vertical-rl] lg:flex"
+          className="pointer-events-none absolute bottom-16 right-3 z-20 hidden items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-ag-fg/40 [writing-mode:vertical-rl] lg:flex"
         >
           <span>WA / BOT</span>
-          <span className="h-10 w-px bg-white/25" />
+          <span className="h-10 w-px bg-ag-fg/25" />
           <span>アゲマセン</span>
         </div>
         <p
           aria-hidden
-          className="pointer-events-none absolute bottom-16 right-16 z-20 hidden text-right text-[10px] font-semibold uppercase leading-relaxed tracking-[0.22em] text-white/40 xl:block"
+          className="pointer-events-none absolute bottom-16 right-16 z-20 hidden text-right text-[10px] font-semibold uppercase leading-relaxed tracking-[0.22em] text-ag-fg/40 xl:block"
         >
           Lat 35.68
           <br />

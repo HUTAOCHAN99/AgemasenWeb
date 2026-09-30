@@ -1,32 +1,35 @@
+"use client";
+
+import { useLanguage } from "@/components/LanguageProvider";
 import { FeatureCard } from "@/components/ui/FeatureCard";
+import { Lines } from "@/components/ui/Lines";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { features } from "@/lib/features";
 
 export function Features() {
+  const { t } = useLanguage();
+
   return (
     <section id="features" className="relative border-t border-ag-line py-24 lg:py-36">
       <div className="shell">
         <Reveal className="flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
           <div>
-            <SectionLabel index="03" label="Features" />
+            <SectionLabel index="03" label={t.features.label} />
             <h2 className="display-h mt-8">
-              One bot.
-              <br />
-              Many things
-              <br />
-              to do.
+              <Lines lines={t.features.heading} />
             </h2>
           </div>
           <p className="max-w-[38ch] text-[15px] leading-relaxed text-ag-muted">
-            Setiap kartu menuju daftar command-nya. Untuk versi paling baru,
-            ketik <code className="font-mono text-white">!menu</code> di chat.
+            {t.features.noteBefore}
+            <code className="font-mono text-ag-fg">!menu</code>
+            {t.features.noteAfter}
           </p>
         </Reveal>
 
         <ul className="mt-14 grid gap-4 md:grid-cols-2 lg:mt-20 lg:grid-cols-3">
           {features.map((feature, i) => (
-            <li key={feature.title}>
+            <li key={feature.key}>
               <Reveal delay={(i % 3) * 0.07} className="h-full">
                 <FeatureCard feature={feature} index={i} />
               </Reveal>

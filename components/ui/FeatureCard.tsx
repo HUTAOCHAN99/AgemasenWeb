@@ -1,4 +1,7 @@
+"use client";
+
 import { ArrowUpRight } from "lucide-react";
+import { useLanguage } from "@/components/LanguageProvider";
 import type { Feature } from "@/lib/features";
 
 export function FeatureCard({
@@ -8,11 +11,13 @@ export function FeatureCard({
   feature: Feature;
   index: number;
 }) {
+  const { t } = useLanguage();
   const Icon = feature.icon;
+  const text = t.features.items[feature.key];
   return (
     <a
       href="/home"
-      aria-label={`${feature.title}: lihat daftar command`}
+      aria-label={`${text.title}: ${t.features.cardLink}`}
       className="group relative flex h-full min-h-[280px] flex-col overflow-hidden rounded-[4px] border border-ag-line bg-ag-ink-2/60 p-6 transition duration-300 hover:-translate-y-1 hover:border-ag-violet/70 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
     >
       <span
@@ -31,19 +36,19 @@ export function FeatureCard({
 
       <div className="relative mt-10">
         <h3 className="font-display text-lg uppercase leading-tight tracking-[-0.01em]">
-          {feature.title}
+          {text.title}
         </h3>
         <p className="mt-3 max-w-[34ch] text-sm leading-relaxed text-ag-muted">
-          {feature.description}
+          {text.description}
         </p>
       </div>
 
       <div className="relative mt-auto flex items-end justify-between gap-4 pt-8">
-        <ul className="flex flex-wrap gap-1.5" aria-label="Command">
+        <ul className="flex flex-wrap gap-1.5" aria-label={t.features.commandList}>
           {feature.commands.map((cmd) => (
             <li
               key={cmd}
-              className="border border-ag-line px-2 py-0.5 font-mono text-[11px] text-white/70"
+              className="border border-ag-line px-2 py-0.5 font-mono text-[11px] text-ag-fg/70"
             >
               {cmd}
             </li>

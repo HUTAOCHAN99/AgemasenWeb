@@ -3,6 +3,8 @@ import "@fontsource/dela-gothic-one/latin-400.css";
 import "@fontsource-variable/plus-jakarta-sans/wght.css";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
+import { SkipLink } from "@/components/SkipLink";
+import { DEFAULT_THEME, themeBootScript } from "@/lib/theme";
 
 export const metadata: Metadata = {
   title: "Agemasen — Bot WhatsApp untuk hari-harimu yang berantakan",
@@ -19,23 +21,28 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#08070D",
-  colorScheme: "dark",
+  colorScheme: "dark light",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="id">
+    // data-theme diganti skrip inline di <head> sebelum paint, jadi atributnya
+    // boleh berbeda dari HTML server (suppressHydrationWarning).
+    <html lang="id" data-theme={DEFAULT_THEME} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeBootScript }} />
+      </head>
       <body>
         <div aria-hidden className="atmos">
           <i />
           <i />
         </div>
-        <a href="#main" className="skip-link">
-          Lewati ke konten
-        </a>
-        <Providers>{children}</Providers>
+        <Providers>
+          <SkipLink />
+          {children}
+        </Providers>
       </body>
     </html>
   );

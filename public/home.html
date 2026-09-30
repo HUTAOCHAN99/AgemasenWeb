@@ -1,12 +1,51 @@
-<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Command · Agemasen Bot</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap"><link rel="stylesheet" href="/style.css"></head><body>
-<nav class="wrap"><b><a href="/">Agemasen</a></b><a href="/home" aria-current="page">Command</a><a href="/admin" >Admin</a></nav>
-<main class="wrap"><h1 style="font-size:2.4rem">Daftar command</h1>
-<p class="muted">Ketik <code>!menu</code> di chat untuk versi lengkap dan terbaru dari bot.</p>
+<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Command · Agemasen Bot</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap"><link rel="stylesheet" href="/style.css"><script>(function(){var t="dark";try{if(localStorage.getItem("agemasen-theme")==="light")t="light"}catch(e){}document.documentElement.setAttribute("data-theme",t)})()</script></head><body>
+<nav class="wrap"><b><a href="/">Agemasen</a></b><a href="/home" aria-current="page">Command</a><a href="/admin" >Admin</a>
+<div class="nav-tools"><div class="langsw" role="group" aria-label="Bahasa"><button type="button" data-lang="id" aria-label="Bahasa Indonesia" title="Bahasa Indonesia">ID</button><button type="button" data-lang="en" aria-label="English" title="English">EN</button></div>
+<button type="button" class="themesw" id="themesw"><svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg><svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button></div></nav>
+<main class="wrap"><h1 style="font-size:2.4rem" data-i18n="h1">Daftar command</h1>
+<p class="muted"><span data-i18n="note1">Ketik</span> <code>!menu</code> <span data-i18n="note2">di chat untuk versi lengkap dan terbaru dari bot.</span></p>
 <dl class="list">
-<div class="row"><dt>Stiker &amp; meme</dt><dd><code>!meme</code> <code>!smeme</code> <code>!sbrat</code> <code>!schat</code></dd></div>
-<div class="row"><dt>Download</dt><dd><code>!dl</code> <code>!dlr</code></dd></div>
-<div class="row"><dt>Foto</dt><dd><code>!hd</code></dd></div>
-<div class="row"><dt>Cari gambar &amp; GIF</dt><dd><code>!img</code> <code>!id</code> <code>!pin</code> <code>!gif</code></dd></div>
-<div class="row"><dt>Baca &amp; ringkas</dt><dd><code>!artikel</code> <code>!ringkas</code> <code>!lupain</code></dd></div>
-<div class="row"><dt>Bantuan</dt><dd><code>!menu</code></dd></div></dl>
-<p style="margin-top:24px"><a class="btn" href="https://wa.me/62XXXXXXXXXX">Chat bot sekarang</a></p></main></body></html>
+<div class="row"><dt data-i18n="c1">Stiker &amp; meme</dt><dd><code>!meme</code> <code>!smeme</code> <code>!sbrat</code> <code>!schat</code></dd></div>
+<div class="row"><dt data-i18n="c2">Download</dt><dd><code>!dl</code> <code>!dlr</code></dd></div>
+<div class="row"><dt data-i18n="c3">Foto</dt><dd><code>!hd</code></dd></div>
+<div class="row"><dt data-i18n="c4">Cari gambar &amp; GIF</dt><dd><code>!img</code> <code>!id</code> <code>!pin</code> <code>!gif</code></dd></div>
+<div class="row"><dt data-i18n="c5">Baca &amp; ringkas</dt><dd><code>!artikel</code> <code>!ringkas</code> <code>!lupain</code></dd></div>
+<div class="row"><dt data-i18n="c6">Bantuan</dt><dd><code>!menu</code></dd></div></dl>
+<p style="margin-top:24px"><a class="btn" href="https://wa.me/62XXXXXXXXXX" data-i18n="chat">Chat bot sekarang</a></p></main>
+<script>
+/* Bahasa ID/EN — memakai kunci localStorage yang sama dengan situs utama (lib/i18n.ts). */
+(function(){
+  var KEY="agemasen-lang";
+  var T={
+    id:{title:"Command · Agemasen Bot",h1:"Daftar command",note1:"Ketik",note2:"di chat untuk versi lengkap dan terbaru dari bot.",c1:"Stiker & meme",c2:"Download",c3:"Foto",c4:"Cari gambar & GIF",c5:"Baca & ringkas",c6:"Bantuan",chat:"Chat bot sekarang",group:"Bahasa",toLight:"Ganti ke tema terang",toDark:"Ganti ke tema gelap"},
+    en:{title:"Commands · Agemasen Bot",h1:"Command list",note1:"Type",note2:"in the chat for the full, up-to-date list from the bot.",c1:"Stickers & memes",c2:"Download",c3:"Photo",c4:"Image & GIF search",c5:"Read & summarize",c6:"Help",chat:"Chat the bot now",group:"Language",toLight:"Switch to light theme",toDark:"Switch to dark theme"}
+  };
+  var TKEY="agemasen-theme";
+  function theme(){return document.documentElement.getAttribute("data-theme")==="light"?"light":"dark"}
+  function setThemeLabel(l){var b=document.getElementById("themesw");if(!b)return;var d=T[l],txt=theme()==="dark"?d.toLight:d.toDark;b.setAttribute("aria-label",txt);b.setAttribute("title",txt)}
+  function get(){try{var s=localStorage.getItem(KEY);return s==="en"||s==="id"?s:"id"}catch(e){return "id"}}
+  function apply(l){
+    var d=T[l];
+    document.documentElement.lang=l;
+    document.title=d.title;
+    document.querySelectorAll("[data-i18n]").forEach(function(el){el.textContent=d[el.getAttribute("data-i18n")]});
+    var g=document.querySelector(".langsw");if(g)g.setAttribute("aria-label",d.group);
+    document.querySelectorAll(".langsw button").forEach(function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-lang")===l))});
+    setThemeLabel(l);
+  }
+  document.getElementById("themesw").addEventListener("click",function(){
+    var next=theme()==="dark"?"light":"dark";
+    document.documentElement.setAttribute("data-theme",next);
+    try{localStorage.setItem(TKEY,next)}catch(e){}
+    setThemeLabel(get());
+  });
+  document.querySelectorAll(".langsw button").forEach(function(b){
+    b.addEventListener("click",function(){
+      var l=b.getAttribute("data-lang");
+      try{localStorage.setItem(KEY,l)}catch(e){}
+      apply(l);
+    });
+  });
+  apply(get());
+})();
+</script></body></html>

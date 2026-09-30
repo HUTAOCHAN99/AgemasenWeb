@@ -3,6 +3,9 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { LanguageSwitch } from "@/components/LanguageSwitch";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { useLanguage } from "@/components/LanguageProvider";
 import { Button } from "@/components/ui/Button";
 import { navLinks, site } from "@/lib/site";
 
@@ -16,6 +19,7 @@ function LogoMark() {
 }
 
 export function Navbar() {
+  const { t } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -44,8 +48,8 @@ export function Navbar() {
       }`}
     >
       <nav
-        aria-label="Navigasi utama"
-        className="shell flex h-16 items-center justify-between gap-6"
+        aria-label={t.nav.label}
+        className="shell flex h-16 items-center justify-between gap-3 lg:gap-6"
       >
         <a
           href="#top"
@@ -53,47 +57,57 @@ export function Navbar() {
           onClick={() => setOpen(false)}
         >
           <LogoMark />
-          <span className="flex flex-col leading-none">
+          <span className="hidden flex-col leading-none min-[385px]:flex">
             <span className="font-display text-lg tracking-[-0.02em]">
               AGEMASEN
             </span>
             <span className="mt-1 hidden text-[9px] font-semibold uppercase tracking-[0.2em] text-ag-muted sm:block">
-              WhatsApp bot / community assistant
+              {t.nav.tagline}
             </span>
           </span>
         </a>
 
         <ul className="hidden items-center gap-8 lg:flex">
           {navLinks.map((link) => (
-            <li key={link.label}>
+            <li key={link.key}>
               <a
                 href={link.href}
                 {...(link.external
                   ? { target: "_blank", rel: "noopener noreferrer" }
                   : {})}
-                className="text-[13px] font-medium text-white/70 transition-colors hover:text-white"
+                className="text-[13px] font-medium text-ag-fg/70 transition-colors hover:text-ag-fg"
               >
-                {link.label}
+                {t.nav[link.key]}
               </a>
             </li>
           ))}
+          <li className="flex items-center gap-2">
+            <LanguageSwitch />
+            <ThemeToggle />
+          </li>
           <li>
             <Button href={site.waUrl} external size="sm">
-              Add bot
+              {t.nav.addBot}
             </Button>
           </li>
         </ul>
 
-        <button
-          type="button"
-          aria-label={open ? "Tutup menu" : "Buka menu"}
-          aria-expanded={open}
-          aria-controls="mobile-menu"
-          onClick={() => setOpen((v) => !v)}
-          className="-mr-2 flex size-11 items-center justify-center lg:hidden"
-        >
-          {open ? <X className="size-6" /> : <Menu className="size-6" />}
-        </button>
+        {/* Mobile: switch selalu terlihat di sebelah tombol menu */}
+        <div className="-mr-2 ml-auto flex items-center gap-1.5 lg:hidden">
+          <LanguageSwitch />
+          <ThemeToggle />
+
+          <button
+            type="button"
+            aria-label={open ? t.nav.closeMenu : t.nav.openMenu}
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            onClick={() => setOpen((v) => !v)}
+            className="flex size-11 items-center justify-center"
+          >
+            {open ? <X className="size-6" /> : <Menu className="size-6" />}
+          </button>
+        </div>
       </nav>
 
       <AnimatePresence>
@@ -108,7 +122,7 @@ export function Navbar() {
           >
             <ul>
               {navLinks.map((link) => (
-                <li key={link.label} className="border-b border-ag-line">
+                <li key={link.key} className="border-b border-ag-line">
                   <a
                     href={link.href}
                     {...(link.external
@@ -117,13 +131,13 @@ export function Navbar() {
                     onClick={() => setOpen(false)}
                     className="flex min-h-14 items-center font-display text-xl uppercase tracking-[-0.01em]"
                   >
-                    {link.label}
+                    {t.nav[link.key]}
                   </a>
                 </li>
               ))}
             </ul>
             <Button href={site.waUrl} external size="lg" block className="mt-6">
-              Add to WhatsApp
+              {t.nav.addToWa}
             </Button>
           </motion.div>
         )}

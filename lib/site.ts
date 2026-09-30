@@ -8,14 +8,16 @@ export const site = {
 
 export const SECTION_TOTAL = "06";
 
-export type NavLink = { label: string; href: string; external?: boolean };
+// Label diambil dari kamus (t.nav[key]) supaya ikut berganti bahasa.
+export type NavKey = "features" | "about" | "howTo" | "commands" | "github";
+export type NavLink = { key: NavKey; href: string; external?: boolean };
 
 export const navLinks: NavLink[] = [
-  { label: "Features", href: "#features" },
-  { label: "About", href: "#about" },
-  { label: "How to use", href: "#how-to-use" },
-  { label: "Commands", href: "/home" },
+  { key: "features", href: "#features" },
+  { key: "about", href: "#about" },
+  { key: "howTo", href: "#how-to-use" },
+  { key: "commands", href: "/home" },
   ...(site.githubUrl
-    ? [{ label: "GitHub", href: site.githubUrl, external: true }]
+    ? [{ key: "github" as const, href: site.githubUrl, external: true }]
     : []),
 ];

@@ -19,7 +19,7 @@ const sizes = {
 
 const variants = {
   primary: "bg-[#7c3aed] text-white hover:bg-ag-magenta",
-  ghost: "btn-ghost text-white",
+  ghost: "btn-ghost text-ag-fg",
 } as const;
 
 // Sengaja memakai <a> biasa (bukan next/link): /home dan /admin adalah

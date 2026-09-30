@@ -24,7 +24,7 @@ function Halo() {
         aria-hidden
         viewBox="0 0 100 100"
         preserveAspectRatio="xMidYMid meet"
-        className="absolute inset-0 h-full w-full text-white"
+        className="absolute inset-0 h-full w-full text-ag-fg"
       >
         <g fill="none" stroke="currentColor" vectorEffect="non-scaling-stroke">
           <circle cx="50" cy="52" r="46" strokeOpacity="0.22" strokeDasharray="0.5 1.6" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
@@ -57,19 +57,19 @@ function Placeholder() {
         <path d="M10 310 140 268" strokeOpacity="0.2" strokeWidth="2" />
       </g>
       <rect x="120" y="60" width="200" height="400" fill="rgb(139 92 246 / 0.08)" stroke="#8B5CF6" strokeOpacity="0.7" strokeDasharray="6 6" />
-      <g stroke="#fff" strokeOpacity="0.8" strokeWidth="2" fill="none">
+      <g stroke="currentColor" strokeOpacity="0.8" strokeWidth="2" fill="none" className="text-ag-fg">
         <path d="M120 84V60h24" />
         <path d="M296 60h24v24" />
         <path d="M320 436v24h-24" />
         <path d="M144 460h-24v-24" />
       </g>
-      <text x="220" y="240" textAnchor="middle" className="fill-white font-display" fontSize="22">
+      <text x="220" y="240" textAnchor="middle" className="fill-ag-fg font-display" fontSize="22">
         ARTWORK
       </text>
-      <text x="220" y="268" textAnchor="middle" className="fill-white/60" fontSize="11" fontWeight="600">
+      <text x="220" y="268" textAnchor="middle" className="fill-ag-fg/60" fontSize="11" fontWeight="600">
         special week.webm
       </text>
-      <text x="220" y="286" textAnchor="middle" className="fill-white/40" fontSize="10">
+      <text x="220" y="286" textAnchor="middle" className="fill-ag-fg/40" fontSize="10">
         public/videos/
       </text>
     </svg>

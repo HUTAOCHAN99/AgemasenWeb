@@ -7,56 +7,24 @@ import {
   Sticker,
   type LucideIcon,
 } from "lucide-react";
+import type { FeatureKey } from "@/lib/i18n";
 
+// Judul & deskripsi ada di lib/i18n.ts (per bahasa); di sini hanya data yang
+// sama untuk semua bahasa: kunci, command, dan ikon.
 export type Feature = {
-  title: string;
-  description: string;
+  key: FeatureKey;
   commands: string[];
   icon: LucideIcon;
 };
 
 // Sumber: daftar command di public/home.html.
 export const features: Feature[] = [
-  {
-    title: "Sticker & Meme",
-    description:
-      "Ubah gambar atau video jadi stiker, tulis teks meme, atau bikin stiker chat dan brat.",
-    commands: ["!meme", "!smeme", "!sbrat", "!schat"],
-    icon: Sticker,
-  },
-  {
-    title: "Downloader",
-    description: "Tempel link, bot kirim videonya balik ke chat.",
-    commands: ["!dl", "!dlr"],
-    icon: Download,
-  },
-  {
-    title: "HD Photo",
-    description: "Foto kecil atau buram dipertajam jadi HD.",
-    commands: ["!hd"],
-    icon: ImageUpscale,
-  },
-  {
-    title: "Image & GIF Search",
-    description:
-      "Cari dari Safebooru, Pinterest, dan Tenor tanpa keluar dari WhatsApp.",
-    commands: ["!img", "!id", "!pin", "!gif"],
-    icon: Images,
-  },
-  {
-    title: "Articles & Summary",
-    description:
-      "Cari artikel jurnal terbuka dan ringkas obrolan grup yang kelewat.",
-    commands: ["!artikel", "!ringkas", "!lupain"],
-    icon: Newspaper,
-  },
-  {
-    title: "Tsundere Chat",
-    description:
-      "Ngobrol dengan AI berkarakter tsundere yang ingat konteks obrolan.",
-    commands: [],
-    icon: MessageCircleHeart,
-  },
+  { key: "sticker", commands: ["!meme", "!smeme", "!sbrat", "!schat"], icon: Sticker },
+  { key: "downloader", commands: ["!dl", "!dlr"], icon: Download },
+  { key: "hd", commands: ["!hd"], icon: ImageUpscale },
+  { key: "search", commands: ["!img", "!id", "!pin", "!gif"], icon: Images },
+  { key: "articles", commands: ["!artikel", "!ringkas", "!lupain"], icon: Newspaper },
+  { key: "chat", commands: [], icon: MessageCircleHeart },
 ];
 
 // Semua command di daftar + !menu.

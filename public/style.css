@@ -1,5 +1,8 @@
 :root{--bg:#F6F4FA;--ink:#1E1B3A;--muted:#5F5A80;--pink:#D62F5F;--mint:#DFF5EC;--mintink:#0F5C48;--line:#DAD5E8;--card:#fff}
-@media(prefers-color-scheme:dark){:root{--bg:#15132B;--ink:#F1EEFA;--muted:#A9A3CC;--pink:#FF6F94;--mint:#173D34;--mintink:#8FE3C6;--line:#302C58;--card:#1E1B3F}}
+@media(prefers-color-scheme:dark){:root:not([data-theme]){--bg:#15132B;--ink:#F1EEFA;--muted:#A9A3CC;--pink:#FF6F94;--mint:#173D34;--mintink:#8FE3C6;--line:#302C58;--card:#1E1B3F;color-scheme:dark}}
+/* Pilihan manual (tombol tema) menimpa preferensi sistem. */
+:root[data-theme="light"]{--bg:#F6F4FA;--ink:#1E1B3A;--muted:#5F5A80;--pink:#D62F5F;--mint:#DFF5EC;--mintink:#0F5C48;--line:#DAD5E8;--card:#fff;color-scheme:light}
+:root[data-theme="dark"]{--bg:#15132B;--ink:#F1EEFA;--muted:#A9A3CC;--pink:#FF6F94;--mint:#173D34;--mintink:#8FE3C6;--line:#302C58;--card:#1E1B3F;color-scheme:dark}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:500 16px/1.65 "Zen Maru Gothic",system-ui,sans-serif}
 a{color:inherit}:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
@@ -37,3 +40,18 @@ input{font:inherit;padding:11px 14px;border-radius:12px;border:2px solid var(--l
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
 [hidden]{display:none!important}
 @media(max-width:760px){.hero,.grid2{grid-template-columns:1fr}.row{grid-template-columns:1fr;gap:4px}}
+
+/* Switch bahasa ID / EN */
+.langsw{display:inline-flex;border:2px solid var(--line);border-radius:999px;padding:2px}
+.langsw button{font:inherit;font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--muted);background:transparent;border:0;border-radius:999px;padding:4px 12px;cursor:pointer}
+.langsw button:hover{color:var(--ink)}
+.langsw button[aria-pressed="true"]{background:var(--pink);color:#fff}
+
+/* Tombol tema (matahari saat gelap, bulan saat terang) & wadah kontrol navbar */
+.nav-tools{display:flex;align-items:center;gap:8px}
+.themesw{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border:2px solid var(--line);border-radius:999px;background:transparent;color:var(--muted);cursor:pointer;padding:0}
+.themesw:hover{color:var(--ink)}
+.themesw svg{width:16px;height:16px}
+.themesw .i-moon{display:none}
+:root[data-theme="light"] .themesw .i-sun{display:none}
+:root[data-theme="light"] .themesw .i-moon{display:block}

@@ -1,23 +1,28 @@
+"use client";
+
+import { useLanguage } from "@/components/LanguageProvider";
+import { Lines } from "@/components/ui/Lines";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { commandCount } from "@/lib/features";
 
-const stats = [
-  { value: `${commandCount}+`, label: "Commands", note: "Ketik !menu untuk daftar terbaru." },
-  { value: "!", label: "One prefix", note: "Semua command diawali tanda seru." },
-  { value: "0", label: "Apps to install", note: "Cukup WhatsApp yang sudah ada." },
-];
-
 export function About() {
+  const { t } = useLanguage();
+  const { stats: s } = t.about;
+  const stats = [
+    { value: `${commandCount}+`, ...s.commands },
+    { value: "!", ...s.prefix },
+    { value: "0", ...s.apps },
+  ];
+
   return (
     <section id="about" className="relative border-t border-ag-line py-24 lg:py-36">
       <div className="shell">
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-8">
           <Reveal className="lg:col-span-6">
-            <SectionLabel index="02" label="About Agemasen" />
+            <SectionLabel index="02" label={t.about.label} />
             <h2 className="display-h mt-8">
-              Not just
-              <br />a bot.
+              <Lines lines={t.about.heading} />
             </h2>
           </Reveal>
 
@@ -25,32 +30,28 @@ export function About() {
             delay={0.1}
             className="space-y-5 text-[15px] leading-relaxed text-ag-muted lg:col-span-5 lg:col-start-8 lg:pt-16"
           >
-            <p className="text-lg font-semibold leading-snug text-white sm:text-xl">
-              Agemasen mengumpulkan alat harian di satu chat: stiker, unduhan,
-              foto HD, pencarian gambar, sampai ringkasan obrolan grup.
+            <p className="text-lg font-semibold leading-snug text-ag-fg sm:text-xl">
+              {t.about.lead}
             </p>
-            <p className="max-w-[52ch]">
-              Semuanya jalan langsung dari WhatsApp, di grup maupun chat
-              pribadi. Sifatnya galak, tapi selalu bantuin.
-            </p>
+            <p className="max-w-[52ch]">{t.about.body}</p>
           </Reveal>
         </div>
 
         <Reveal delay={0.05}>
           <dl className="mt-16 grid border-t border-ag-line sm:grid-cols-3 lg:mt-24">
-            {stats.map((s) => (
+            {stats.map((st) => (
               <div
-                key={s.label}
+                key={st.label}
                 className="flex flex-col border-b border-ag-line py-8 sm:border-b-0 sm:border-l sm:px-8 sm:first:border-l-0 sm:first:pl-0"
               >
                 <dt className="order-2 mt-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-ag-muted">
-                  {s.label}
+                  {st.label}
                 </dt>
                 <dd className="font-display text-6xl leading-none tracking-[-0.03em]">
-                  {s.value}
+                  {st.value}
                 </dd>
                 <dd className="order-3 mt-4 text-[13px] font-medium leading-relaxed text-ag-muted">
-                  {s.note}
+                  {st.note}
                 </dd>
               </div>
             ))}
