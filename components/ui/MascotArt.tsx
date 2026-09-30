@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 type MascotArtProps = {
   src: string | null;
   alt: string;
@@ -37,13 +35,13 @@ function Halo() {
   );
 }
 
-// Dipakai saat public/images/special-week.png belum ada.
+// Dipakai saat public/videos/special week.webm belum ada.
 function Placeholder() {
   return (
     <svg
       viewBox="0 0 400 500"
       role="img"
-      aria-label="Slot artwork maskot: letakkan special-week.png di public/images"
+      aria-label="Slot artwork maskot: letakkan special week.webm di public/videos"
       preserveAspectRatio="xMidYMax meet"
       className="h-full w-full"
     >
@@ -64,10 +62,10 @@ function Placeholder() {
         ARTWORK
       </text>
       <text x="220" y="268" textAnchor="middle" className="fill-white/60" fontSize="11" fontWeight="600">
-        special-week.png
+        special week.webm
       </text>
       <text x="220" y="286" textAnchor="middle" className="fill-white/40" fontSize="10">
-        public/images/
+        public/videos/
       </text>
     </svg>
   );
@@ -77,7 +75,6 @@ export function MascotArt({
   src,
   alt,
   priority,
-  sizes = "(min-width: 1024px) 60vw, 92vw",
   float = true,
   className = "absolute inset-0",
 }: MascotArtProps) {
@@ -86,13 +83,16 @@ export function MascotArt({
       <Halo />
       <div className={`absolute inset-0 ${float ? "animate-float" : ""}`}>
         {src ? (
-          <Image
+          <video
             src={src}
-            alt={alt}
-            fill
-            priority={priority}
-            sizes={sizes}
-            className="object-contain object-bottom"
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload={priority ? "auto" : "metadata"}
+            aria-label={alt}
+            role="img"
+            className="h-full w-full object-contain object-bottom"
           />
         ) : (
           <Placeholder />
