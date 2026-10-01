@@ -1,4 +1,4 @@
-// Jembatan tipis: menjalankan handler lama di /api/*.js (login, logout, stats)
+// Jembatan tipis: menjalankan handler lama di /api/*.js (login, logout, stats, subscription, ...)
 // di dalam Next.js, tanpa mengubah isi file handler maupun lib/auth.js.
 // Admin tetap memanggil URL yang sama: /api/login, /api/stats, /api/logout.
 import type { NextRequest } from "next/server";
@@ -7,6 +7,7 @@ import login from "../../../api/login.js";
 import logout from "../../../api/logout.js";
 import pulse from "../../../api/pulse.js";
 import stats from "../../../api/stats.js";
+import subscription from "../../../api/subscription.js";
 import toggle from "../../../api/toggle.js";
 
 export const runtime = "nodejs";
@@ -25,7 +26,7 @@ type LegacyRes = {
 };
 type LegacyHandler = (req: LegacyReq, res: LegacyRes) => unknown;
 
-const handlers: Record<string, LegacyHandler> = { login, logout, stats, pulse, detail, toggle };
+const handlers: Record<string, LegacyHandler> = { login, logout, stats, pulse, detail, toggle, subscription };
 
 async function handle(
   request: NextRequest,

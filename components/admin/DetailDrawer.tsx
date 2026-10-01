@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useLanguage } from "@/components/LanguageProvider";
 import { Avatar, Pill } from "@/components/admin/parts";
+import { SubscriptionPanel, type SubInfo } from "@/components/admin/Subscription";
 
 export type DetailKind = "group" | "user";
 
@@ -16,6 +17,7 @@ export type DetailTarget = {
   pp?: string | null;
   disabled: boolean;
   members?: number;
+  sub?: SubInfo | null; // langganan dari daftar, dipakai sebagai tampilan awal
 };
 
 type CmdInfo = {
@@ -28,6 +30,7 @@ type CmdInfo = {
 type Person = { name: string | null; number: string | null; super?: boolean };
 type Detail = {
   pp?: string | null;
+  subscription?: SubInfo | null;
   disabled?: boolean;
   blocked?: boolean;
   name?: string | null;
@@ -59,10 +62,12 @@ export function DetailDrawer({
   target,
   onClose,
   onToggled,
+  onSubscribed,
 }: {
   target: DetailTarget | null;
   onClose: () => void;
   onToggled: (kind: DetailKind, id: string, disabled: boolean) => void;
+  onSubscribed?: (kind: DetailKind, id: string, sub: SubInfo) => void;
 }) {
   const { t } = useLanguage();
   const a = t.admin;
@@ -73,6 +78,7 @@ export function DetailDrawer({
   const [disabled, setDisabled] = useState(false);
   const [saving, setSaving] = useState(false);
   const [toggleError, setToggleError] = useState<string | null>(null);
+  const [sub, setSub] = useState<SubInfo | null>(null);
 
   const key = target ? `${target.kind}:${target.id}` : null;
 
@@ -83,6 +89,7 @@ export function DetailDrawer({
     setLoadError(null);
     setToggleError(null);
     setDisabled(target.disabled);
+    setSub(target.sub ?? null);
     const ctrl = new AbortController();
     const qs = new URLSearchParams({ type: target.kind, id: target.id });
     fetch(`/api/detail?${qs}`, { cache: "no-store", signal: ctrl.signal })
@@ -91,6 +98,7 @@ export function DetailDrawer({
         if (!r.ok) throw new Error(d.error || a.errDetail);
         setDetail(d);
         setDisabled(!!(d.disabled ?? d.blocked));
+        setSub(d.subscription ?? null);
       })
       .catch((e: Error) => {
         if (e.name !== "AbortError") setLoadError(e.message || a.errDetail);
@@ -252,6 +260,17 @@ export function DetailDrawer({
                   </p>
                 )}
               </div>
+
+              {/* Langganan (hitung mundur, data di Supabase) */}
+              <SubscriptionPanel
+                kind={target.kind}
+                id={target.id}
+                sub={sub}
+                onChange={(s) => {
+                  setSub(s);
+                  onSubscribed?.(target.kind, target.id, s);
+                }}
+              />
 
               {loadError ? (
                 <p role="alert" className="mt-8 text-sm font-semibold text-ag-pink">

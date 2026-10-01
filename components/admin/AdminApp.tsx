@@ -6,6 +6,7 @@ import { useLanguage } from "@/components/LanguageProvider";
 import { Navbar, type AdminNav } from "@/components/Navbar";
 import { Dashboard, type Stats, type Tab } from "@/components/admin/Dashboard";
 import { LoginCard } from "@/components/admin/LoginCard";
+import type { SubInfo } from "@/components/admin/Subscription";
 
 type View = "checking" | "login" | "dash";
 
@@ -80,6 +81,20 @@ export function AdminApp() {
     [],
   );
 
+  // Setelah langganan diubah dari drawer, perbarui baris di daftar langsung.
+  const onSubscribed = useCallback(
+    (kind: "group" | "user", id: string, sub: SubInfo) => {
+      setData((d) =>
+        d
+          ? kind === "group"
+            ? { ...d, groups: d.groups?.map((g) => (g.id === id ? { ...g, sub } : g)) }
+            : { ...d, users: d.users?.map((u) => (u.number === id ? { ...u, sub } : u)) }
+          : d,
+      );
+    },
+    [],
+  );
+
   async function logout() {
     try {
       await fetch("/api/logout", { method: "POST" });
@@ -125,7 +140,14 @@ export function AdminApp() {
   } else if (view === "login") {
     content = <LoginCard onLogin={load} />;
   } else {
-    content = <Dashboard data={data} error={error} tab={tab} onRetry={load} onToggled={onToggled} />;
+    content = <Dashboard
+        data={data}
+        error={error}
+        tab={tab}
+        onRetry={load}
+        onToggled={onToggled}
+        onSubscribed={onSubscribed}
+      />;
   }
 
   return (

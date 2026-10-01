@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useLanguage } from "@/components/LanguageProvider";
 import { DetailDrawer, type DetailKind, type DetailTarget } from "@/components/admin/DetailDrawer";
 import { Avatar, Empty, Panel, Pill, SearchBox, td, th } from "@/components/admin/parts";
+import { SubCell, useNow, type SubInfo } from "@/components/admin/Subscription";
 
 export type GroupRow = {
   id?: string;
@@ -14,6 +15,7 @@ export type GroupRow = {
   cmdToday?: number;
   disabled?: boolean;
   pp?: string | null;
+  sub?: SubInfo | null;
 };
 
 export type UserRow = {
@@ -24,13 +26,24 @@ export type UserRow = {
   lastSeen?: string | number | null;
   blocked?: boolean;
   pp?: string | null;
+  sub?: SubInfo | null;
 };
 
 type Toggled = (kind: DetailKind, id: string, disabled: boolean) => void;
+type Subscribed = (kind: DetailKind, id: string, sub: SubInfo) => void;
 
-export function GroupList({ groups, onToggled }: { groups: GroupRow[]; onToggled: Toggled }) {
+export function GroupList({
+  groups,
+  onToggled,
+  onSubscribed,
+}: {
+  groups: GroupRow[];
+  onToggled: Toggled;
+  onSubscribed: Subscribed;
+}) {
   const { t } = useLanguage();
   const a = t.admin;
+  const now = useNow();
   const [q, setQ] = useState("");
   const [sel, setSel] = useState<DetailTarget | null>(null);
   const fmt = (n: number) => n.toLocaleString(a.locale);
@@ -40,7 +53,7 @@ export function GroupList({ groups, onToggled }: { groups: GroupRow[]; onToggled
     <Panel title={a.groupsTitle} count={groups.length}>
       <SearchBox value={q} onChange={setQ} placeholder={a.searchGroups} />
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[700px] text-left text-[13px]">
+        <table className="w-full min-w-[820px] text-left text-[13px]">
           <thead>
             <tr className="border-b border-ag-line">
               <th className={th}>{a.colGroup}</th>
@@ -48,6 +61,7 @@ export function GroupList({ groups, onToggled }: { groups: GroupRow[]; onToggled
               <th className={`${th} text-right`}>{a.colCmdToday}</th>
               <th className={`${th} text-right`}>{a.colCmd7}</th>
               <th className={`${th} text-right`}>{a.colStatus}</th>
+              <th className={`${th} text-right`}>{a.colSub}</th>
               <th className={th}>
                 <span className="sr-only">{a.detail}</span>
               </th>
@@ -60,7 +74,15 @@ export function GroupList({ groups, onToggled }: { groups: GroupRow[]; onToggled
                   key={`${g.id ?? g.name}-${i}`}
                   onClick={() =>
                     g.id &&
-                    setSel({ kind: "group", id: g.id, name: g.name, pp: g.pp, disabled: !!g.disabled, members: g.members })
+                    setSel({
+                      kind: "group",
+                      id: g.id,
+                      name: g.name,
+                      pp: g.pp,
+                      disabled: !!g.disabled,
+                      members: g.members,
+                      sub: g.sub,
+                    })
                   }
                   className={g.id ? "cursor-pointer transition-colors hover:bg-ag-fg/[0.04]" : ""}
                 >
@@ -78,13 +100,16 @@ export function GroupList({ groups, onToggled }: { groups: GroupRow[]; onToggled
                   <td className={`${td} text-right`}>
                     <Pill tone={g.disabled ? "bad" : "ok"}>{g.disabled ? a.disabled : a.active}</Pill>
                   </td>
+                  <td className={`${td} text-right`}>
+                    <SubCell sub={g.sub} now={now} />
+                  </td>
                   <td className={`${td} w-8 pl-0 text-ag-muted`}>
                     <ChevronRight className="size-4" aria-hidden />
                   </td>
                 </tr>
               ))
             ) : (
-              <Empty cols={6} text={groups.length ? a.noMatch : a.emptyGroups} />
+              <Empty cols={7} text={groups.length ? a.noMatch : a.emptyGroups} />
             )}
           </tbody>
         </table>
@@ -95,14 +120,24 @@ export function GroupList({ groups, onToggled }: { groups: GroupRow[]; onToggled
         onToggled={(k, id, d) => {
           onToggled(k, id, d);
         }}
+        onSubscribed={onSubscribed}
       />
     </Panel>
   );
 }
 
-export function UserList({ users, onToggled }: { users: UserRow[]; onToggled: Toggled }) {
+export function UserList({
+  users,
+  onToggled,
+  onSubscribed,
+}: {
+  users: UserRow[];
+  onToggled: Toggled;
+  onSubscribed: Subscribed;
+}) {
   const { t } = useLanguage();
   const a = t.admin;
+  const now = useNow();
   const [q, setQ] = useState("");
   const [sel, setSel] = useState<DetailTarget | null>(null);
   const fmt = (n: number) => n.toLocaleString(a.locale);
@@ -124,7 +159,7 @@ export function UserList({ users, onToggled }: { users: UserRow[]; onToggled: To
     <Panel title={a.usersTitle} count={users.length}>
       <SearchBox value={q} onChange={setQ} placeholder={a.searchUsers} />
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[780px] text-left text-[13px]">
+        <table className="w-full min-w-[900px] text-left text-[13px]">
           <thead>
             <tr className="border-b border-ag-line">
               <th className={th}>{a.colName}</th>
@@ -132,6 +167,7 @@ export function UserList({ users, onToggled }: { users: UserRow[]; onToggled: To
               <th className={`${th} text-right`}>{a.colMsgCount}</th>
               <th className={`${th} text-right`}>{a.colLast}</th>
               <th className={`${th} text-right`}>{a.colStatus}</th>
+              <th className={`${th} text-right`}>{a.colSub}</th>
               <th className={th}>
                 <span className="sr-only">{a.detail}</span>
               </th>
@@ -145,7 +181,14 @@ export function UserList({ users, onToggled }: { users: UserRow[]; onToggled: To
                   <tr
                     key={`${u.number}-${i}`}
                     onClick={() =>
-                      setSel({ kind: "user", id: u.number, name, pp: u.pp, disabled: !!u.blocked })
+                      setSel({
+                        kind: "user",
+                        id: u.number,
+                        name,
+                        pp: u.pp,
+                        disabled: !!u.blocked,
+                        sub: u.sub,
+                      })
                     }
                     className="cursor-pointer transition-colors hover:bg-ag-fg/[0.04]"
                   >
@@ -168,6 +211,9 @@ export function UserList({ users, onToggled }: { users: UserRow[]; onToggled: To
                     <td className={`${td} text-right`}>
                       <Pill tone={u.blocked ? "bad" : "ok"}>{u.blocked ? a.blocked : a.active}</Pill>
                     </td>
+                    <td className={`${td} text-right`}>
+                      <SubCell sub={u.sub} now={now} />
+                    </td>
                     <td className={`${td} w-8 pl-0 text-ag-muted`}>
                       <ChevronRight className="size-4" aria-hidden />
                     </td>
@@ -175,7 +221,7 @@ export function UserList({ users, onToggled }: { users: UserRow[]; onToggled: To
                 );
               })
             ) : (
-              <Empty cols={6} text={users.length ? a.noMatch : a.emptyUsers} />
+              <Empty cols={7} text={users.length ? a.noMatch : a.emptyUsers} />
             )}
           </tbody>
         </table>
@@ -186,6 +232,7 @@ export function UserList({ users, onToggled }: { users: UserRow[]; onToggled: To
         onToggled={(k, id, d) => {
           onToggled(k, id, d);
         }}
+        onSubscribed={onSubscribed}
       />
     </Panel>
   );

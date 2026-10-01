@@ -6,6 +6,7 @@ import { Stat, SysCard, bytes, uptime } from "@/components/ServerActivity";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { GroupList, UserList, type GroupRow, type UserRow } from "@/components/admin/Lists";
 import { Panel } from "@/components/admin/parts";
+import type { SubInfo } from "@/components/admin/Subscription";
 import { Reveal } from "@/components/ui/Reveal";
 
 // Bentuk respons /api/stats (lihat api/stats.js). Semua field dibaca dengan
@@ -44,12 +45,14 @@ export function Dashboard({
   tab,
   onRetry,
   onToggled,
+  onSubscribed,
 }: {
   data: Stats | null;
   error: string | null;
   tab: Tab;
   onRetry: () => void;
   onToggled: (kind: "group" | "user", id: string, disabled: boolean) => void;
+  onSubscribed: (kind: "group" | "user", id: string, sub: SubInfo) => void;
 }) {
   const { t } = useLanguage();
   const a = t.admin;
@@ -233,13 +236,13 @@ export function Dashboard({
 
             {tab === "groups" && (
               <Reveal className="mt-8">
-                <GroupList groups={groups} onToggled={onToggled} />
+                <GroupList groups={groups} onToggled={onToggled} onSubscribed={onSubscribed} />
               </Reveal>
             )}
 
             {tab === "users" && (
               <Reveal className="mt-8">
-                <UserList users={users} onToggled={onToggled} />
+                <UserList users={users} onToggled={onToggled} onSubscribed={onSubscribed} />
               </Reveal>
             )}
 
