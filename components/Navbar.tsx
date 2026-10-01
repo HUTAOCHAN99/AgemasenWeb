@@ -1,13 +1,14 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { LogOut, Menu, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { NavClock } from "@/components/NavClock";
 import { LanguageSwitch } from "@/components/LanguageSwitch";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useLanguage } from "@/components/LanguageProvider";
+import { ActionButton } from "@/components/ui/ActionButton";
 import { Button } from "@/components/ui/Button";
 import { navLinks, site } from "@/lib/site";
 
@@ -23,9 +24,21 @@ function LogoMark() {
   );
 }
 
-// home=false dipakai di halaman selain landing (mis. admin): tautan section
-// diarahkan ke "/#section" supaya tetap berfungsi dari halaman mana pun.
-export function Navbar({ home = true }: { home?: boolean }) {
+// Daftar menu khusus admin. Desain & layout navbar tetap sama dengan landing
+// page; yang berbeda hanya isi menunya (lihat AdminApp untuk sumber datanya).
+export type AdminNav = {
+  items: { key: string; label: string }[];
+  active: string;
+  onSelect: (key: string) => void;
+  onLogout?: () => void;
+  logoutLabel: string;
+  label: string;
+};
+
+// home=false dipakai di halaman selain landing: tautan section diarahkan ke
+// "/#section" supaya tetap berfungsi dari halaman mana pun.
+// admin diisi di halaman admin -> menu landing diganti menu admin.
+export function Navbar({ home = true, admin }: { home?: boolean; admin?: AdminNav }) {
   const base = home ? "" : "/";
   const hrefOf = (l: { href: string; external?: boolean }) =>
     l.external ? l.href : base + l.href;
@@ -59,7 +72,7 @@ export function Navbar({ home = true }: { home?: boolean }) {
       }`}
     >
       <nav
-        aria-label={t.nav.label}
+        aria-label={admin ? admin.label : t.nav.label}
         className="shell flex h-16 items-center justify-between gap-3 lg:gap-6"
       >
         <a
@@ -79,28 +92,59 @@ export function Navbar({ home = true }: { home?: boolean }) {
         </a>
 
         <ul className="hidden items-center gap-8 lg:flex">
-          {navLinks.map((link) => (
-            <li key={link.key}>
-              <a
-                href={hrefOf(link)}
-                {...(link.external
-                  ? { target: "_blank", rel: "noopener noreferrer" }
-                  : {})}
-                className="text-[13px] font-medium text-ag-fg/70 transition-colors hover:text-ag-fg"
-              >
-                {t.nav[link.key]}
-              </a>
-            </li>
-          ))}
+          {admin
+            ? admin.items.map((item) => (
+                <li key={item.key}>
+                  <a
+                    href={`#${item.key}`}
+                    aria-current={admin.active === item.key ? "page" : undefined}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      admin.onSelect(item.key);
+                    }}
+                    className={`border-b-2 py-1 text-[13px] font-medium transition-colors hover:text-ag-fg ${
+                      admin.active === item.key
+                        ? "border-ag-pink text-ag-fg"
+                        : "border-transparent text-ag-fg/70"
+                    }`}
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            : navLinks.map((link) => (
+                <li key={link.key}>
+                  <a
+                    href={hrefOf(link)}
+                    {...(link.external
+                      ? { target: "_blank", rel: "noopener noreferrer" }
+                      : {})}
+                    className="text-[13px] font-medium text-ag-fg/70 transition-colors hover:text-ag-fg"
+                  >
+                    {t.nav[link.key]}
+                  </a>
+                </li>
+              ))}
           <li className="flex items-center gap-2">
             <LanguageSwitch />
             <ThemeToggle />
           </li>
-          <li>
-            <Button href={site.waUrl} external size="sm">
-              {t.nav.addBot}
-            </Button>
-          </li>
+          {admin ? (
+            admin.onLogout && (
+              <li>
+                <ActionButton size="sm" onClick={admin.onLogout}>
+                  <LogOut className="size-3.5" aria-hidden />
+                  {admin.logoutLabel}
+                </ActionButton>
+              </li>
+            )
+          ) : (
+            <li>
+              <Button href={site.waUrl} external size="sm">
+                {t.nav.addBot}
+              </Button>
+            </li>
+          )}
         </ul>
 
         {/* Mobile: switch selalu terlihat di sebelah tombol menu */}
@@ -132,24 +176,60 @@ export function Navbar({ home = true }: { home?: boolean }) {
             className="shell border-t border-ag-line pb-6 pt-2 lg:hidden"
           >
             <ul>
-              {navLinks.map((link) => (
-                <li key={link.key} className="border-b border-ag-line">
-                  <a
-                    href={hrefOf(link)}
-                    {...(link.external
-                      ? { target: "_blank", rel: "noopener noreferrer" }
-                      : {})}
-                    onClick={() => setOpen(false)}
-                    className="flex min-h-14 items-center font-display text-xl uppercase tracking-[-0.01em]"
-                  >
-                    {t.nav[link.key]}
-                  </a>
-                </li>
-              ))}
+              {admin
+                ? admin.items.map((item) => (
+                    <li key={item.key} className="border-b border-ag-line">
+                      <a
+                        href={`#${item.key}`}
+                        aria-current={admin.active === item.key ? "page" : undefined}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          admin.onSelect(item.key);
+                          setOpen(false);
+                        }}
+                        className={`flex min-h-14 items-center font-display text-xl uppercase tracking-[-0.01em] ${
+                          admin.active === item.key ? "text-ag-pink" : ""
+                        }`}
+                      >
+                        {item.label}
+                      </a>
+                    </li>
+                  ))
+                : navLinks.map((link) => (
+                    <li key={link.key} className="border-b border-ag-line">
+                      <a
+                        href={hrefOf(link)}
+                        {...(link.external
+                          ? { target: "_blank", rel: "noopener noreferrer" }
+                          : {})}
+                        onClick={() => setOpen(false)}
+                        className="flex min-h-14 items-center font-display text-xl uppercase tracking-[-0.01em]"
+                      >
+                        {t.nav[link.key]}
+                      </a>
+                    </li>
+                  ))}
             </ul>
-            <Button href={site.waUrl} external size="lg" block className="mt-6">
-              {t.nav.addToWa}
-            </Button>
+            {admin ? (
+              admin.onLogout && (
+                <ActionButton
+                  size="lg"
+                  block
+                  className="mt-6"
+                  onClick={() => {
+                    setOpen(false);
+                    admin.onLogout?.();
+                  }}
+                >
+                  <LogOut className="size-4" aria-hidden />
+                  {admin.logoutLabel}
+                </ActionButton>
+              )
+            ) : (
+              <Button href={site.waUrl} external size="lg" block className="mt-6">
+                {t.nav.addToWa}
+              </Button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

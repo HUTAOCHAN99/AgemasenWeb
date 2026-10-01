@@ -26,6 +26,7 @@ http.createServer(async (req, res) => {
     if (!/^[a-z]+$/.test(name) || !fs.existsSync(path.join(__dirname, "api", name + ".js"))) {
       res.writeHead(404); return res.end();
     }
+    req.query = Object.fromEntries(url.searchParams);
     let raw = "";
     for await (const c of req) raw += c;
     if ((req.headers["content-type"] || "").includes("json")) { try { req.body = JSON.parse(raw); } catch { req.body = {}; } }

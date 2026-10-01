@@ -2,10 +2,12 @@
 // di dalam Next.js, tanpa mengubah isi file handler maupun lib/auth.js.
 // Admin tetap memanggil URL yang sama: /api/login, /api/stats, /api/logout.
 import type { NextRequest } from "next/server";
+import detail from "../../../api/detail.js";
 import login from "../../../api/login.js";
 import logout from "../../../api/logout.js";
 import pulse from "../../../api/pulse.js";
 import stats from "../../../api/stats.js";
+import toggle from "../../../api/toggle.js";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -13,6 +15,7 @@ export const dynamic = "force-dynamic";
 type LegacyReq = {
   method: string;
   headers: Record<string, string>;
+  query: Record<string, string>;
   body?: unknown;
 };
 type LegacyRes = {
@@ -22,7 +25,7 @@ type LegacyRes = {
 };
 type LegacyHandler = (req: LegacyReq, res: LegacyRes) => unknown;
 
-const handlers: Record<string, LegacyHandler> = { login, logout, stats, pulse };
+const handlers: Record<string, LegacyHandler> = { login, logout, stats, pulse, detail, toggle };
 
 async function handle(
   request: NextRequest,
@@ -34,6 +37,7 @@ async function handle(
   const req: LegacyReq = {
     method: request.method,
     headers: Object.fromEntries(request.headers.entries()),
+    query: Object.fromEntries(request.nextUrl.searchParams.entries()),
   };
   if ((request.headers.get("content-type") ?? "").includes("json")) {
     try {

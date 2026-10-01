@@ -1,10 +1,11 @@
 "use client";
 
-import { Clock, Cpu, Hexagon, Layers, LogOut, MemoryStick, Monitor, Server } from "lucide-react";
-import type { ReactNode } from "react";
+import { Clock, Cpu, Hexagon, Layers, MemoryStick, Monitor, Server } from "lucide-react";
 import { useLanguage } from "@/components/LanguageProvider";
 import { Stat, SysCard, bytes, uptime } from "@/components/ServerActivity";
 import { ActionButton } from "@/components/ui/ActionButton";
+import { GroupList, UserList, type GroupRow, type UserRow } from "@/components/admin/Lists";
+import { Panel } from "@/components/admin/parts";
 import { Reveal } from "@/components/ui/Reveal";
 
 // Bentuk respons /api/stats (lihat api/stats.js). Semua field dibaca dengan
@@ -16,14 +17,8 @@ export type Stats = {
   today?: number;
   week?: number;
   totalMembers?: number;
-  groups?: { name: string; members: number; cmd7: number; disabled?: boolean }[];
-  users?: {
-    name?: string;
-    number: string;
-    count: number;
-    lastSeen?: string | number | null;
-    blocked?: boolean;
-  }[];
+  groups?: GroupRow[];
+  users?: UserRow[];
   daily?: { d: string; n: number }[];
   top?: { command: string; n: number }[];
   system?: {
@@ -41,86 +36,25 @@ export type Stats = {
   };
 };
 
-function Panel({
-  title,
-  count,
-  className = "",
-  children,
-}: {
-  title: string;
-  count?: number;
-  className?: string;
-  children: ReactNode;
-}) {
-  return (
-    <div
-      className={`overflow-hidden rounded-[6px] border border-ag-line bg-ag-ink-2/80 ${className}`}
-    >
-      <div className="flex items-center gap-2.5 border-b border-ag-line bg-ag-fg/[0.04] px-4 py-3 sm:px-5">
-        <span aria-hidden className="size-2 rounded-full bg-ag-pink" />
-        <h2 className="text-[12px] font-extrabold uppercase tracking-[0.12em]">{title}</h2>
-        {count != null && (
-          <span className="ml-auto rounded-full border border-ag-line px-2.5 py-0.5 text-[10px] font-bold tabular-nums text-ag-muted">
-            {count}
-          </span>
-        )}
-      </div>
-      {children}
-    </div>
-  );
-}
-
-function Pill({ tone, children }: { tone: "ok" | "bad"; children: ReactNode }) {
-  return (
-    <span
-      className={`inline-block rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em] ${
-        tone === "ok"
-          ? "border-emerald-400/40 text-emerald-400 light:text-emerald-700"
-          : "border-ag-pink/40 text-ag-pink"
-      }`}
-    >
-      {children}
-    </span>
-  );
-}
-
-const th = "px-5 py-3 text-[10px] font-bold uppercase tracking-[0.14em] text-ag-muted";
-const td = "px-5 py-3 align-middle";
-
-function Empty({ cols, text }: { cols: number; text: string }) {
-  return (
-    <tr>
-      <td colSpan={cols} className="px-5 py-10 text-center text-sm text-ag-muted">
-        {text}
-      </td>
-    </tr>
-  );
-}
+export type Tab = "overview" | "system" | "groups" | "users";
 
 export function Dashboard({
   data,
   error,
-  onLogout,
+  tab,
   onRetry,
+  onToggled,
 }: {
   data: Stats | null;
   error: string | null;
-  onLogout: () => void;
+  tab: Tab;
   onRetry: () => void;
+  onToggled: (kind: "group" | "user", id: string, disabled: boolean) => void;
 }) {
   const { t } = useLanguage();
   const a = t.admin;
   const ac = t.activity;
   const fmt = (n: number) => n.toLocaleString(a.locale);
-
-  const when = (v?: string | number | null) =>
-    v
-      ? new Date(v).toLocaleString(a.locale, {
-          timeZone: "Asia/Jakarta",
-          dateStyle: "medium",
-          timeStyle: "short",
-        })
-      : "-";
 
   const groups = data?.groups ?? [];
   const users = data?.users ?? [];
@@ -148,6 +82,12 @@ export function Dashboard({
     ? `${sys.cpuModel}${sys.cpuCores ? ` (${sys.cpuCores} ${ac.cores})` : ""}`
     : undefined;
   const ic = "size-[18px]";
+  const heading = {
+    overview: a.title,
+    system: a.sysTitle,
+    groups: a.groupsTitle,
+    users: a.usersTitle,
+  }[tab];
 
   return (
     <section
@@ -165,13 +105,9 @@ export function Dashboard({
               id="admin-title"
               className="display-h mt-4 text-[clamp(2rem,5.4vw,3.75rem)]"
             >
-              {a.title}
+              {heading}
             </h1>
           </div>
-          <ActionButton variant="ghost" size="md" onClick={onLogout} className="self-start sm:self-auto">
-            <LogOut className="size-4" aria-hidden />
-            {a.logout}
-          </ActionButton>
         </div>
 
         {error ? (
@@ -212,6 +148,8 @@ export function Dashboard({
               <span>{a.weekNote}</span>
             </div>
 
+            {tab === "overview" && (
+              <>
             {/* Angka ringkas */}
             <Reveal>
               <div className="mt-8 overflow-hidden rounded-[6px] border border-ag-line bg-ag-ink-2/80">
@@ -225,11 +163,15 @@ export function Dashboard({
               </div>
             </Reveal>
 
+              </>
+            )}
+
+            {tab === "system" && sys && (
+              <>
             {/* Sistem */}
             {sys && (
               <Reveal delay={0.05}>
-                <h2 className="mt-14 font-display text-2xl uppercase sm:text-3xl">{a.sysTitle}</h2>
-                <div className="mt-6 grid gap-4 md:grid-cols-2">
+                <div className="mt-8 grid gap-4 md:grid-cols-2">
                   {cpu != null && (
                     <SysCard
                       icon={<Cpu className={ic} />}
@@ -282,81 +224,27 @@ export function Dashboard({
               </Reveal>
             )}
 
-            {/* Tabel grup & user */}
-            <Reveal delay={0.05} className="mt-14 space-y-6">
-              <Panel title={a.groupsTitle} count={groups.length}>
-                <div className="overflow-x-auto">
-                  <table className="w-full min-w-[520px] text-left text-[13px]">
-                    <thead>
-                      <tr className="border-b border-ag-line">
-                        <th className={th}>{a.colGroup}</th>
-                        <th className={`${th} text-right`}>{a.colMembers}</th>
-                        <th className={`${th} text-right`}>{a.colCmd7}</th>
-                        <th className={`${th} text-right`}>{a.colStatus}</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-ag-line">
-                      {groups.length ? (
-                        groups.map((g, i) => (
-                          <tr key={`${g.name}-${i}`}>
-                            <td className={`${td} font-bold`}>{g.name}</td>
-                            <td className={`${td} text-right tabular-nums`}>{fmt(g.members)}</td>
-                            <td className={`${td} text-right tabular-nums`}>{fmt(g.cmd7)}</td>
-                            <td className={`${td} text-right`}>
-                              <Pill tone={g.disabled ? "bad" : "ok"}>
-                                {g.disabled ? a.disabled : a.active}
-                              </Pill>
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <Empty cols={4} text={a.emptyGroups} />
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </Panel>
+              </>
+            )}
 
-              <Panel title={a.usersTitle} count={users.length}>
-                <div className="overflow-x-auto">
-                  <table className="w-full min-w-[640px] text-left text-[13px]">
-                    <thead>
-                      <tr className="border-b border-ag-line">
-                        <th className={th}>{a.colName}</th>
-                        <th className={`${th} text-right`}>{a.colNumber}</th>
-                        <th className={`${th} text-right`}>{a.colMessages}</th>
-                        <th className={`${th} text-right`}>{a.colLast}</th>
-                        <th className={`${th} text-right`}>{a.colStatus}</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-ag-line">
-                      {users.length ? (
-                        users.map((u, i) => (
-                          <tr key={`${u.number}-${i}`}>
-                            <td className={`${td} font-bold`}>{u.name || "-"}</td>
-                            <td className={`${td} text-right font-mono tabular-nums`}>
-                              +{u.number}
-                            </td>
-                            <td className={`${td} text-right tabular-nums`}>{fmt(u.count)}</td>
-                            <td className={`${td} text-right tabular-nums text-ag-muted`}>
-                              {when(u.lastSeen)}
-                            </td>
-                            <td className={`${td} text-right`}>
-                              <Pill tone={u.blocked ? "bad" : "ok"}>
-                                {u.blocked ? a.blocked : a.active}
-                              </Pill>
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <Empty cols={5} text={a.emptyUsers} />
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </Panel>
-            </Reveal>
+            {tab === "system" && !sys && (
+              <p className="mt-10 text-sm text-ag-muted">{a.emptyTop}</p>
+            )}
 
+            {tab === "groups" && (
+              <Reveal className="mt-8">
+                <GroupList groups={groups} onToggled={onToggled} />
+              </Reveal>
+            )}
+
+            {tab === "users" && (
+              <Reveal className="mt-8">
+                <UserList users={users} onToggled={onToggled} />
+              </Reveal>
+            )}
+
+            {tab === "overview" && (
+              <>
             {/* Grafik harian & command teratas */}
             <Reveal delay={0.05} className="mt-6 grid gap-6 lg:grid-cols-2">
               <Panel title={a.dailyTitle}>
@@ -429,6 +317,9 @@ export function Dashboard({
                 )}
               </Panel>
             </Reveal>
+              </>
+            )}
+
           </>
         )}
       </div>
