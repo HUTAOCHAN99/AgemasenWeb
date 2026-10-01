@@ -1,7 +1,7 @@
 export const site = {
   name: "Agemasen",
   // Ganti nomor di bawah (atau set NEXT_PUBLIC_WA_URL) dengan nomor bot yang sebenarnya.
-  waUrl: process.env.NEXT_PUBLIC_WA_URL ?? "https://wa.me/62XXXXXXXXXX",
+  waUrl: process.env.NEXT_PUBLIC_WA_URL ?? "https://wa.me/6289650789020",
   // Kosongkan untuk menyembunyikan semua tautan GitHub.
   githubUrl: process.env.NEXT_PUBLIC_GITHUB_URL ?? "",
 };
