@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   title: "Agemasen — Bot WhatsApp untuk hari-harimu yang berantakan",
   description:
     "Bot WhatsApp untuk bikin stiker, download video, perbesar foto jadi HD, cari gambar dan GIF, sampai ngobrol dengan karakter tsundere. Proyek penggemar bertema Uma Musume.",
+  icons: {
+    icon: "/image/agemasen%20icon.webp",
+  },
   openGraph: {
     title: "Agemasen — WhatsApp bot, powered by chaos",
     description:

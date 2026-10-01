@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { NavClock } from "@/components/NavClock";
 import { LanguageSwitch } from "@/components/LanguageSwitch";
@@ -12,10 +13,13 @@ import { navLinks, site } from "@/lib/site";
 
 function LogoMark() {
   return (
-    <svg viewBox="0 0 64 64" aria-hidden className="size-8 shrink-0">
-      <path d="M8 52 26 10h12l18 42h-11l-4-10H23l-4 10Zm18-20h12l-6-15Z" fill="#8B5CF6" />
-      <path d="M44 52 53 30" stroke="#F472B6" strokeWidth="5" strokeLinecap="square" />
-    </svg>
+    <Image
+      src="/image/agemasen%20icon.webp"
+      alt=""
+      width={64}
+      height={64}
+      className="size-8 shrink-0 object-contain"
+    />
   );
 }
 
