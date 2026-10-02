@@ -111,7 +111,7 @@ export function MascotArt({
             }}
             aria-label={alt}
             role="img"
-            className="h-full w-full object-contain object-bottom"
+            className="h-full w-full object-cover object-center lg:object-contain lg:object-bottom"
           />
         ) : (
           <Placeholder />

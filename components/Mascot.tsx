@@ -25,7 +25,7 @@ export function Mascot({ art }: { art: string | null }) {
 
   return (
     <section id="mascot" className="relative border-t border-ag-line py-24 lg:py-36">
-      <div className="shell grid items-center gap-14 lg:grid-cols-12 lg:gap-10">
+      <div className="shell grid grid-cols-[minmax(0,1fr)] items-center gap-14 lg:grid-cols-12 lg:gap-10">
         <Reveal className="lg:col-span-6">
           <div className="relative mx-auto aspect-[4/5] w-full max-w-[520px] lg:max-w-none">
             <Corners />

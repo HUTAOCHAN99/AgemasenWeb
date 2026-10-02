@@ -112,7 +112,7 @@ export function Hero({ art }: { art: string | null }) {
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, ease, delay: 0.25 }}
-          className="relative z-10 mx-auto mt-6 aspect-[4/5] w-full max-w-[480px] lg:absolute lg:bottom-0 lg:right-[-5%] lg:top-20 lg:mx-0 lg:mt-0 lg:aspect-auto lg:max-w-none lg:w-[68%] xl:w-[74%]"
+          className="relative z-10 mx-auto mt-6 aspect-square w-full max-w-[520px] lg:absolute lg:bottom-0 lg:right-[-5%] lg:top-20 lg:mx-0 lg:mt-0 lg:aspect-auto lg:max-w-none lg:w-[68%] xl:w-[74%]"
         >
           <MascotArt
             src={art}

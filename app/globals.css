@@ -95,11 +95,14 @@
     background: var(--ag-ink);
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
+    overflow-x: clip;
+    max-width: 100%;
   }
   body {
     font-family: var(--font-sans);
     color: var(--ag-fg);
     overflow-x: clip;
+    max-width: 100%;
     -webkit-font-smoothing: antialiased;
   }
   ::selection { background: var(--ag-magenta); color: #fff; }
@@ -108,6 +111,10 @@
     outline-offset: 3px;
   }
   section[id] { scroll-margin-top: 4rem; }
+  /* Anak grid/flex default min-width:auto, sehingga teks nowrap (mis. daftar
+     anggota grup di chat preview) melebarkan kolom dan halaman jadi ter-zoom-out
+     di HP. min-width:0 membuat kolom boleh menyusut. */
+  .grid > *, .shell > * { min-width: 0; }
 }
 
 @layer components {
@@ -227,6 +234,8 @@
    Selalu gelap, tidak mengikuti tema situs. Diport dari Chat-WhatApp-Imitation. ===== */
 @layer components {
   .wa {
+    min-width: 0;
+    max-width: 100%;
     --wa-panel: #1d1f1f;
     --wa-bubble: #202020;
     --wa-text: #e9edef;
@@ -250,7 +259,7 @@
     padding: 0 16px;
     background: var(--wa-panel);
   }
-  .wa-info { flex: 1; min-width: 0; }
+  .wa-info { flex: 1 1 0; min-width: 0; overflow: hidden; }
   .wa-title { font-size: 16px; }
   .wa-sub {
     font-size: 12.5px;
@@ -259,7 +268,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .wa-icons { display: flex; align-items: center; gap: 18px; color: #aebac1; }
+  .wa-icons { display: flex; flex-shrink: 0; align-items: center; gap: 18px; color: #aebac1; }
   .wa-sep { width: 1px; height: 26px; background: #2f3131; }
   .wa-pin {
     height: 42px;
@@ -274,6 +283,7 @@
     color: var(--wa-sub);
   }
   .wa-pin b { color: #d1d7db; font-weight: 500; }
+  .wa-pin span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
   .wa-chat {
     flex: 1;
@@ -357,7 +367,7 @@
     background: linear-gradient(160deg, #e58aa8, #b5489a);
   }
   .wa-pic.photo { height: auto; background: transparent; }
-  .wa-pic img { display: block; width: 100%; height: auto; }
+  .wa-pic img { display: block; width: 100%; height: auto; min-height: 60px; }
   .wa-fwd { align-self: center; margin-left: 10px; color: var(--wa-sub); }
 
   .wa-quote {

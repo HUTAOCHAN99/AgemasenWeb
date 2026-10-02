@@ -47,7 +47,7 @@ function rich(s: string) {
 function Avatar({ p, size = 32, fs = 14 }: { p: Pick<Person, "bg" | "letter" | "avatar">; size?: number; fs?: number }) {
   return (
     <div className="wa-av" style={{ width: size, height: size, fontSize: fs, background: p.bg }}>
-      {p.avatar ? <img src={p.avatar} alt="" loading="lazy" decoding="async" /> : p.letter}
+      {p.avatar ? <img src={p.avatar} alt="" decoding="async" /> : p.letter}
     </div>
   );
 }
@@ -68,7 +68,7 @@ function Message({ m, onMedia }: { m: Msg; onMedia: () => void }) {
         {isImg && (
           <div className={"wa-pic" + (m.image ? " photo" : "")}>
             {m.image ? (
-              <img src={m.image} alt="" loading="lazy" decoding="async" onLoad={onMedia} />
+              <img src={m.image} alt="" decoding="async" onLoad={onMedia} onError={onMedia} />
             ) : (
               m.letter
             )}
@@ -239,7 +239,7 @@ export function BotPreview() {
 
   return (
     <section id="preview" className="relative border-t border-ag-line py-24 lg:py-36">
-      <div className="shell grid items-start gap-12 lg:grid-cols-12 lg:gap-10">
+      <div className="shell grid grid-cols-[minmax(0,1fr)] items-start gap-12 lg:grid-cols-12 lg:gap-10">
         {/* Kiri: judul */}
         <Reveal className="lg:col-span-5 lg:pt-4">
           <SectionLabel index="04" label={p.label} />

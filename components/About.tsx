@@ -18,7 +18,7 @@ export function About() {
   return (
     <section id="about" className="relative border-t border-ag-line py-24 lg:py-36">
       <div className="shell">
-        <div className="grid gap-12 lg:grid-cols-12 lg:gap-8">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-12 lg:grid-cols-12 lg:gap-8">
           <Reveal className="lg:col-span-6">
             <SectionLabel index="02" label={t.about.label} />
             <h2 className="display-h mt-8">

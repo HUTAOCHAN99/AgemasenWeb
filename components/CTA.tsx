@@ -3,6 +3,7 @@
 import { useLanguage } from "@/components/LanguageProvider";
 import { Button } from "@/components/ui/Button";
 import { Lines } from "@/components/ui/Lines";
+import Image from "next/image";
 import { MascotArt } from "@/components/ui/MascotArt";
 import { Reveal } from "@/components/ui/Reveal";
 import { site } from "@/lib/site";
@@ -38,7 +39,7 @@ export function CTA() {
         />
       </div>
 
-      <div className="shell py-24 lg:py-36">
+      <div className="shell pb-10 pt-24 md:py-24 lg:py-36">
         <Reveal className="max-w-[56rem]">
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-ag-pink">
             {t.cta.eyebrow}
@@ -57,6 +58,18 @@ export function CTA() {
             ) : null}
           </div>
         </Reveal>
+      </div>
+
+      {/* Mobile: karakter mengintip dari tepi bawah section, di bawah tombol */}
+      <div aria-hidden className="mx-auto w-full max-w-[560px] px-5 sm:px-8 md:hidden">
+        <Image
+          src="/image/eyes.png"
+          alt=""
+          width={1731}
+          height={909}
+          sizes="(min-width: 640px) 560px, 100vw"
+          className="block h-auto w-full"
+        />
       </div>
     </section>
   );
