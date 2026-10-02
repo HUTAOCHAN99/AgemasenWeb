@@ -96,12 +96,13 @@ function Message({ m, onMedia }: { m: Msg; onMedia: () => void }) {
 }
 
 function ChatWindow({ mode, play }: { mode: ScenarioKey; play: boolean }) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const reduce = useReducedMotion();
-  const [msgs, setMsgs] = useState<Msg[]>([SCENARIOS[mode][0]]);
+  const [msgs, setMsgs] = useState<Msg[]>([SCENARIOS[lang][mode][0]]);
   const [typing, setTyping] = useState(false);
   const [val, setVal] = useState("");
   const box = useRef<HTMLDivElement>(null);
+  const group = GROUP[lang];
 
   // Scroll hanya kotak chat-nya, bukan seluruh halaman.
   const toBottom = useCallback(() => {
@@ -115,7 +116,7 @@ function ChatWindow({ mode, play }: { mode: ScenarioKey; play: boolean }) {
 
   // Mainkan skenario berurutan; ulang dari awal setelah selesai.
   useEffect(() => {
-    const script = SCENARIOS[mode];
+    const script = SCENARIOS[lang][mode];
     setTyping(false);
     if (reduce) {
       setMsgs(script); // gerak dikurangi: tampilkan semuanya sekaligus
@@ -163,7 +164,7 @@ function ChatWindow({ mode, play }: { mode: ScenarioKey; play: boolean }) {
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [mode, play, reduce]);
+  }, [mode, lang, play, reduce]);
 
   const send = () => {
     const text = val.trim();
@@ -176,10 +177,10 @@ function ChatWindow({ mode, play }: { mode: ScenarioKey; play: boolean }) {
   return (
     <div className="wa" role="region" aria-label={t.botPreview.chatLabel}>
       <div className="wa-hdr">
-        <Avatar p={{ bg: PEOPLE.bot.bg, letter: "P", avatar: GROUP.avatar }} size={40} fs={18} />
+        <Avatar p={{ bg: PEOPLE.bot.bg, letter: "P", avatar: group.avatar }} size={40} fs={18} />
         <div className="wa-info">
-          <div className="wa-title">{GROUP.title}</div>
-          <div className="wa-sub">{GROUP.members}</div>
+          <div className="wa-title">{group.title}</div>
+          <div className="wa-sub">{group.members}</div>
         </div>
         <div className="wa-icons" aria-hidden>
           <Video size={20} />
@@ -191,7 +192,7 @@ function ChatWindow({ mode, play }: { mode: ScenarioKey; play: boolean }) {
 
       <div className="wa-pin" aria-hidden>
         <Pin size={16} />
-        <span><b>{GROUP.pinned}</b> {GROUP.pinnedText}</span>
+        <span><b>{group.pinned}</b> {group.pinnedText}</span>
       </div>
 
       <div className="wa-chat" ref={box}>
