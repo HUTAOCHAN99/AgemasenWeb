@@ -127,7 +127,7 @@ export function Hero({ art }: { art: string | null }) {
           aria-hidden
           className="pointer-events-none absolute right-12 top-24 z-20 hidden text-right text-[10px] font-semibold uppercase leading-relaxed tracking-[0.22em] text-ag-fg/50 lg:block"
         >
-          <p className="tabular-nums text-ag-pink">01 / 06</p>
+          <p className="tabular-nums text-ag-pink">01 / 07</p>
           <p>{hero.featured}</p>
         </div>
         <div

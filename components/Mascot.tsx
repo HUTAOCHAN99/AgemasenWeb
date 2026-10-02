@@ -33,7 +33,7 @@ export function Mascot({ art }: { art: string | null }) {
               aria-hidden
               className="absolute left-4 top-4 z-10 text-[10px] font-semibold uppercase tracking-[0.22em] text-ag-fg/50"
             >
-              Profile / 04
+              Profile / 05
             </p>
             <p
               aria-hidden
@@ -52,7 +52,7 @@ export function Mascot({ art }: { art: string | null }) {
         </Reveal>
 
         <Reveal delay={0.1} className="lg:col-span-6 lg:pl-6">
-          <SectionLabel index="04" label={t.mascot.label} />
+          <SectionLabel index="05" label={t.mascot.label} />
           <h2 className="display-h mt-8">
             <Lines lines={t.mascot.heading} />
           </h2>

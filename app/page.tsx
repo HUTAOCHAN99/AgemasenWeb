@@ -1,6 +1,7 @@
 import { About } from "@/components/About";
 import { CTA } from "@/components/CTA";
 import { ServerActivity } from "@/components/ServerActivity";
+import { BotPreview } from "@/components/BotPreview";
 import { Features } from "@/components/Features";
 import { Footer } from "@/components/Footer";
 import { Hero } from "@/components/Hero";
@@ -19,6 +20,7 @@ export default function Home() {
         <Hero art={art} />
         <About />
         <Features />
+        <BotPreview />
         <Mascot art="/image/profile.png" />
         <HowToUse />
         <ServerActivity />

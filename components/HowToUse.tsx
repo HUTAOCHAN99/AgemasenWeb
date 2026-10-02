@@ -11,7 +11,7 @@ export function HowToUse() {
     <section id="how-to-use" className="relative border-t border-ag-line py-24 lg:py-36">
       <div className="shell">
         <Reveal>
-          <SectionLabel index="05" label={t.howTo.label} />
+          <SectionLabel index="06" label={t.howTo.label} />
           <h2 className="display-h mt-8">{t.howTo.heading}</h2>
         </Reveal>
 

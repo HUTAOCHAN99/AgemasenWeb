@@ -6,7 +6,7 @@ export const site = {
   githubUrl: process.env.NEXT_PUBLIC_GITHUB_URL ?? "",
 };
 
-export const SECTION_TOTAL = "06";
+export const SECTION_TOTAL = "07";
 
 // Label diambil dari kamus (t.nav[key]) supaya ikut berganti bahasa.
 export type NavKey = "features" | "about" | "howTo" | "github";

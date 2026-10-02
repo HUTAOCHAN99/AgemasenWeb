@@ -222,3 +222,209 @@
     animation: none !important;
   }
 }
+
+/* ===== Bot preview (components/BotPreview.tsx): tampilan chat WhatsApp gelap.
+   Selalu gelap, tidak mengikuti tema situs. Diport dari Chat-WhatApp-Imitation. ===== */
+@layer components {
+  .wa {
+    --wa-panel: #1d1f1f;
+    --wa-bubble: #202020;
+    --wa-text: #e9edef;
+    --wa-sub: #8696a0;
+    --wa-green: #06cf9c;
+    --wa-yellow: #e8c36a;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: #111;
+    color: var(--wa-text);
+    font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14.2px;
+  }
+  .wa-hdr {
+    height: 59px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0 16px;
+    background: var(--wa-panel);
+  }
+  .wa-info { flex: 1; min-width: 0; }
+  .wa-title { font-size: 16px; }
+  .wa-sub {
+    font-size: 12.5px;
+    color: var(--wa-sub);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .wa-icons { display: flex; align-items: center; gap: 18px; color: #aebac1; }
+  .wa-sep { width: 1px; height: 26px; background: #2f3131; }
+  .wa-pin {
+    height: 42px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 20px;
+    background: var(--wa-panel);
+    border-top: 1px solid #292b2b;
+    font-size: 13px;
+    color: var(--wa-sub);
+  }
+  .wa-pin b { color: #d1d7db; font-weight: 500; }
+
+  .wa-chat {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 16px 14px 12px;
+    background-color: #0d0d0d;
+    background-image:
+      radial-gradient(circle at 20px 20px, #171717 2px, transparent 3px),
+      radial-gradient(circle at 60px 50px, #171717 6px, transparent 7px),
+      radial-gradient(circle at 90px 90px, #151515 3px, transparent 4px);
+    background-size: 110px 110px;
+    scrollbar-width: thin;
+    scrollbar-color: #2f3131 transparent;
+  }
+  @media (min-width: 40rem) { .wa-chat { padding: 16px 28px 12px 20px; } }
+
+  .wa-row { display: flex; align-items: flex-start; margin-bottom: 2px; min-width: 0; }
+  .wa-row.head { margin-top: 14px; }
+  .wa-row.head:first-child { margin-top: 0; }
+
+  .wa-av {
+    width: 32px; height: 32px;
+    flex-shrink: 0;
+    border-radius: 9999px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    font-weight: 600;
+    color: #fff;
+  }
+  .wa-av img { width: 100%; height: 100%; object-fit: cover; }
+  .wa-gap { width: 32px; flex-shrink: 0; }
+
+  .wa-bub {
+    position: relative;
+    width: fit-content;
+    min-width: 0;
+    max-width: calc(100% - 44px);
+    margin-left: 12px;
+    padding: 6px 8px 6px 9px;
+    border-radius: 8px;
+    background: var(--wa-bubble);
+    box-shadow: 0 1px 0.5px rgb(0 0 0 / 0.3);
+    line-height: 19px;
+  }
+  @media (min-width: 40rem) { .wa-bub { max-width: min(560px, calc(100% - 44px)); margin-left: 16px; } }
+  .wa-bub.img { padding: 3px 3px 6px; width: 220px; max-width: calc(100% - 80px); }
+  .wa-bub.img .wa-cap { padding: 6px 5px 0; }
+
+  .wa-name {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    margin-bottom: 2px;
+    font-size: 12.8px;
+    font-weight: 500;
+  }
+  .wa-txt {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font-size: 14.2px;
+    color: var(--wa-text);
+  }
+  .wa-txt b { font-weight: 700; }
+  .wa-time {
+    float: right;
+    margin: 7px 0 -3px 14px;
+    font-size: 11px;
+    color: var(--wa-sub);
+  }
+  .wa-mention { color: var(--wa-green); }
+
+  .wa-pic {
+    width: 100%;
+    height: 200px;
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 40px; font-weight: 700; color: #fff;
+    background: linear-gradient(160deg, #e58aa8, #b5489a);
+  }
+  .wa-pic.photo { height: auto; background: transparent; }
+  .wa-pic img { display: block; width: 100%; height: auto; }
+  .wa-fwd { align-self: center; margin-left: 10px; color: var(--wa-sub); }
+
+  .wa-quote {
+    min-width: min(260px, 100%);
+    margin-bottom: 5px;
+    padding: 5px 9px;
+    border-left: 4px solid var(--wa-yellow);
+    border-radius: 6px;
+    background: rgb(255 255 255 / 0.05);
+  }
+  .wa-qn { font-size: 12.8px; font-weight: 600; }
+  .wa-qt { margin-top: 1px; font-size: 13.5px; line-height: 18px; color: #a8b0b5; overflow-wrap: anywhere; }
+  .wa-big { padding-top: 6px; text-align: center; font-size: 24px; letter-spacing: 4px; }
+
+  .wa-typing {
+    height: 34px;
+    margin-left: 12px;
+    padding: 0 12px;
+    display: flex; align-items: center; gap: 4px;
+    border-radius: 8px;
+    background: var(--wa-bubble);
+  }
+  @media (min-width: 40rem) { .wa-typing { margin-left: 16px; } }
+  .wa-typing span {
+    width: 6px; height: 6px;
+    border-radius: 9999px;
+    background: var(--wa-sub);
+    animation: wa-bounce 1s infinite ease-in-out;
+  }
+  .wa-typing span:nth-child(2) { animation-delay: 0.15s; }
+  .wa-typing span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes wa-bounce {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-4px); }
+  }
+  @media (prefers-reduced-motion: reduce) { .wa-typing span { animation: none; } }
+
+  .wa-inp {
+    height: 62px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    background: #111;
+  }
+  .wa-pill {
+    flex: 1;
+    min-width: 0;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 14px;
+    border-radius: 24px;
+    background: var(--wa-panel);
+    color: #aebac1;
+  }
+  .wa-pill input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: none;
+    color: var(--wa-text);
+    font-size: 16px; /* 16px mencegah zoom otomatis di iOS */
+  }
+  .wa-pill input::placeholder { color: var(--wa-sub); }
+  .wa-send { display: flex; color: inherit; cursor: pointer; background: none; border: 0; padding: 0; }
+  .wa-send:hover { color: var(--wa-green); }
+}
