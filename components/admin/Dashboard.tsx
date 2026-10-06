@@ -1,6 +1,7 @@
 "use client";
 
 import { Clock, Cpu, Hexagon, Layers, MemoryStick, Monitor, Server } from "lucide-react";
+import { useState } from "react";
 import { useLanguage } from "@/components/LanguageProvider";
 import { Stat, SysCard, bytes, uptime } from "@/components/ServerActivity";
 import { ActionButton } from "@/components/ui/ActionButton";
@@ -12,7 +13,25 @@ import { Reveal } from "@/components/ui/Reveal";
 // Bentuk respons /api/stats (lihat api/stats.js). Semua field dibaca dengan
 // nilai cadangan supaya bot yang belum mengirim field tertentu tidak membuat
 // halaman error.
+// Satu bot (nomor WA) yang dikelola dashboard ini. Dikirim /api/stats sebagai
+// `bots`; angka-angkanya khusus bot itu (dipakai saat filter bot dipilih).
+export type BotInfo = {
+  id: string;
+  label: string;
+  number?: string | null;
+  online: boolean;
+  error?: string;
+  uptimeSec?: number | null;
+  system?: Stats["system"] | null;
+  totalMembers?: number;
+  today?: number;
+  week?: number;
+  daily?: { d: string; n: number }[];
+  top?: { command: string; n: number }[];
+};
+
 export type Stats = {
+  bots?: BotInfo[];
   botOnline?: boolean;
   uptimeSec?: number;
   today?: number;
@@ -51,22 +70,34 @@ export function Dashboard({
   error: string | null;
   tab: Tab;
   onRetry: () => void;
-  onToggled: (kind: "group" | "user", id: string, disabled: boolean) => void;
-  onSubscribed: (kind: "group" | "user", id: string, sub: SubInfo) => void;
+  onToggled: (kind: "group" | "user", id: string, disabled: boolean, botId?: string) => void;
+  onSubscribed: (kind: "group" | "user", id: string, sub: SubInfo, botId?: string) => void;
 }) {
   const { t } = useLanguage();
   const a = t.admin;
   const ac = t.activity;
   const fmt = (n: number) => n.toLocaleString(a.locale);
 
-  const groups = data?.groups ?? [];
-  const users = data?.users ?? [];
-  const daily = data?.daily ?? [];
-  const top = data?.top ?? [];
-  const sys = data?.system ?? null;
-  const online = !!data?.botOnline;
-  const up = data?.uptimeSec != null
-    ? uptime(data.uptimeSec, { d: ac.uDay, h: ac.uHour, m: ac.uMin })
+  // MULTI-BOT: filter per bot. "all" = gabungan; kalau bot yang dipilih sudah
+  // tidak ada di data (mis. dihapus dari env BOTS), otomatis kembali ke "all".
+  const [botSel, setBotSel] = useState("all");
+  const bots = data?.bots ?? [];
+  const multi = bots.length > 1;
+  const selBot = multi ? bots.find((b) => b.id === botSel) : undefined;
+  const botIds = bots.map((b) => b.id);
+
+  const groups = (data?.groups ?? []).filter((g) => !selBot || g.botId === selBot.id);
+  const users = (data?.users ?? []).filter((u) => !selBot || u.botId === selBot.id);
+  const daily = (selBot ? selBot.daily : data?.daily) ?? [];
+  const top = (selBot ? selBot.top : data?.top) ?? [];
+  const sys = (selBot ? selBot.system : data?.system) ?? null;
+  const online = selBot ? selBot.online : !!data?.botOnline;
+  const uptimeSec = selBot ? selBot.uptimeSec : data?.uptimeSec;
+  const todayN = selBot ? selBot.today : data?.today;
+  const weekN = selBot ? selBot.week : data?.week;
+  const membersN = selBot ? selBot.totalMembers : data?.totalMembers;
+  const up = uptimeSec != null
+    ? uptime(uptimeSec, { d: ac.uDay, h: ac.uHour, m: ac.uMin })
     : null;
 
   const maxDaily = Math.max(1, ...daily.map((x) => x.n));
@@ -131,18 +162,40 @@ export function Dashboard({
         ) : (
           <>
             <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-ag-muted">
-              <span
-                role="status"
-                className="inline-flex items-center gap-2.5 rounded-full border border-ag-line px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em]"
-              >
+              {multi ? (
+                bots.map((b) => (
+                  <span
+                    key={b.id}
+                    role="status"
+                    title={b.error ?? undefined}
+                    className="inline-flex items-center gap-2.5 rounded-full border border-ag-line px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em]"
+                  >
+                    <span
+                      aria-hidden
+                      className={`size-2 rounded-full ${
+                        b.online ? "animate-blink bg-emerald-400" : "bg-ag-muted"
+                      }`}
+                    />
+                    {b.label}
+                    {b.number ? <span className="font-mono normal-case opacity-70">+{b.number}</span> : null}
+                    {" · "}
+                    {b.online ? a.botOnline : b.error ? a.botUnreachable : a.botOffline}
+                  </span>
+                ))
+              ) : (
                 <span
-                  aria-hidden
-                  className={`size-2 rounded-full ${
-                    online ? "animate-blink bg-emerald-400" : "bg-ag-muted"
-                  }`}
-                />
-                {online ? a.botOnline : a.botOffline}
-              </span>
+                  role="status"
+                  className="inline-flex items-center gap-2.5 rounded-full border border-ag-line px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em]"
+                >
+                  <span
+                    aria-hidden
+                    className={`size-2 rounded-full ${
+                      online ? "animate-blink bg-emerald-400" : "bg-ag-muted"
+                    }`}
+                  />
+                  {online ? a.botOnline : a.botOffline}
+                </span>
+              )}
               {up && (
                 <span className="tabular-nums">
                   {a.uptime} {up}
@@ -151,6 +204,29 @@ export function Dashboard({
               <span>{a.weekNote}</span>
             </div>
 
+            {multi && (
+              <div role="group" aria-label={a.botFilterLabel} className="mt-4 flex flex-wrap gap-2">
+                {[{ id: "all", label: a.allBots }, ...bots.map((b) => ({ id: b.id, label: b.label }))].map((o) => {
+                  const on = (selBot ? selBot.id : "all") === o.id;
+                  return (
+                    <button
+                      key={o.id}
+                      type="button"
+                      aria-pressed={on}
+                      onClick={() => setBotSel(o.id)}
+                      className={`h-8 rounded-full border px-3.5 text-[11px] font-bold transition-colors ${
+                        on
+                          ? "border-ag-pink bg-ag-pink/10 text-ag-fg"
+                          : "border-ag-line text-ag-muted hover:bg-ag-fg/[0.06]"
+                      }`}
+                    >
+                      {o.label}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
             {tab === "overview" && (
               <>
             {/* Angka ringkas */}
@@ -158,10 +234,10 @@ export function Dashboard({
               <div className="mt-8 overflow-hidden rounded-[6px] border border-ag-line bg-ag-ink-2/80">
                 <div className="-mb-px -mr-px grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
                   <Stat label={a.kGroups} value={fmt(groups.length)} />
-                  <Stat label={a.kMembers} value={fmt(data.totalMembers ?? 0)} />
+                  <Stat label={a.kMembers} value={fmt(membersN ?? 0)} />
                   <Stat label={a.kUsers} value={fmt(users.length)} />
-                  <Stat label={a.kToday} value={fmt(data.today ?? 0)} />
-                  <Stat label={a.kWeek} value={fmt(data.week ?? 0)} />
+                  <Stat label={a.kToday} value={fmt(todayN ?? 0)} />
+                  <Stat label={a.kWeek} value={fmt(weekN ?? 0)} />
                 </div>
               </div>
             </Reveal>
@@ -210,11 +286,11 @@ export function Dashboard({
                   )}
                 </div>
                 <div className="mt-4 grid gap-4 md:grid-cols-3">
-                  {data.uptimeSec != null && (
+                  {uptimeSec != null && (
                     <SysCard
                       icon={<Clock className={ic} />}
                       label={ac.uptime}
-                      value={uptime(data.uptimeSec, { d: ac.uDay, h: ac.uHour, m: ac.uMin })}
+                      value={uptime(uptimeSec, { d: ac.uDay, h: ac.uHour, m: ac.uMin })}
                     />
                   )}
                   {nodeText && (
@@ -236,13 +312,13 @@ export function Dashboard({
 
             {tab === "groups" && (
               <Reveal className="mt-8">
-                <GroupList groups={groups} onToggled={onToggled} onSubscribed={onSubscribed} />
+                <GroupList groups={groups} botIds={botIds} onToggled={onToggled} onSubscribed={onSubscribed} />
               </Reveal>
             )}
 
             {tab === "users" && (
               <Reveal className="mt-8">
-                <UserList users={users} onToggled={onToggled} onSubscribed={onSubscribed} />
+                <UserList users={users} botIds={botIds} onToggled={onToggled} onSubscribed={onSubscribed} />
               </Reveal>
             )}
 

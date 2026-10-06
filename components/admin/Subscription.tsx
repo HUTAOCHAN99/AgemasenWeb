@@ -59,11 +59,13 @@ const btn =
 
 // Panel di drawer detail: lihat sisa waktu + tambah hari / hentikan.
 export function SubscriptionPanel({
+  botId,
   kind,
   id,
   sub,
   onChange,
 }: {
+  botId?: string; // MULTI-BOT: langganan diatur per bot (nomor WA)
   kind: "group" | "user";
   id: string;
   sub: SubInfo | null;
@@ -88,7 +90,7 @@ export function SubscriptionPanel({
       const r = await fetch("/api/subscription", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: kind, id, action, days: n }),
+        body: JSON.stringify({ botId, type: kind, id, action, days: n }),
       });
       const d = await r.json().catch(() => ({}));
       if (!r.ok || !d.sub) throw new Error(d.error || a.errSub);

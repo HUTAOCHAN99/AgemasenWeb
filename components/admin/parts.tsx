@@ -108,3 +108,33 @@ export function SearchBox({
     </div>
   );
 }
+
+// Penanda bot (nomor WA) pada baris grup/user. Warna dibedakan per bot
+// dari urutannya di daftar, supaya grup yang sama di dua bot mudah dibedakan.
+const BOT_TONES = [
+  "border-ag-violet/50 text-ag-violet",
+  "border-ag-pink/50 text-ag-pink",
+  "border-emerald-400/50 text-emerald-400 light:text-emerald-700",
+  "border-amber-400/50 text-amber-400 light:text-amber-700",
+];
+
+export function BotBadge({
+  label,
+  number,
+  index = 0,
+}: {
+  label?: string | null;
+  number?: string | null;
+  index?: number;
+}) {
+  if (!label) return null;
+  return (
+    <span
+      title={number ? `${label} • +${number}` : label}
+      className={`inline-block max-w-full truncate rounded-[4px] border px-1.5 py-0.5 align-middle text-[10px] font-extrabold tracking-wider ${BOT_TONES[index % BOT_TONES.length]}`}
+    >
+      {label}
+      {number ? <span className="ml-1 font-mono font-semibold opacity-70">…{number.slice(-4)}</span> : null}
+    </span>
+  );
+}

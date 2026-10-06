@@ -4,10 +4,13 @@ import { ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { useLanguage } from "@/components/LanguageProvider";
 import { DetailDrawer, type DetailKind, type DetailTarget } from "@/components/admin/DetailDrawer";
-import { Avatar, Empty, Panel, Pill, SearchBox, td, th } from "@/components/admin/parts";
+import { Avatar, BotBadge, Empty, Panel, Pill, SearchBox, td, th } from "@/components/admin/parts";
 import { SubCell, useNow, type SubInfo } from "@/components/admin/Subscription";
 
 export type GroupRow = {
+  botId?: string;
+  botLabel?: string | null;
+  botNumber?: string | null;
   id?: string;
   name: string;
   members: number;
@@ -19,6 +22,9 @@ export type GroupRow = {
 };
 
 export type UserRow = {
+  botId?: string;
+  botLabel?: string | null;
+  botNumber?: string | null;
   name?: string | null;
   number: string;
   count: number;
@@ -29,15 +35,17 @@ export type UserRow = {
   sub?: SubInfo | null;
 };
 
-type Toggled = (kind: DetailKind, id: string, disabled: boolean) => void;
-type Subscribed = (kind: DetailKind, id: string, sub: SubInfo) => void;
+type Toggled = (kind: DetailKind, id: string, disabled: boolean, botId?: string) => void;
+type Subscribed = (kind: DetailKind, id: string, sub: SubInfo, botId?: string) => void;
 
 export function GroupList({
   groups,
+  botIds = [],
   onToggled,
   onSubscribed,
 }: {
   groups: GroupRow[];
+  botIds?: string[]; // urutan bot, dipakai untuk warna badge; badge hanya muncul bila > 1 bot
   onToggled: Toggled;
   onSubscribed: Subscribed;
 }) {
@@ -47,6 +55,7 @@ export function GroupList({
   const [q, setQ] = useState("");
   const [sel, setSel] = useState<DetailTarget | null>(null);
   const fmt = (n: number) => n.toLocaleString(a.locale);
+  const multi = botIds.length > 1;
   const rows = groups.filter((g) => g.name.toLowerCase().includes(q.trim().toLowerCase()));
 
   return (
@@ -71,10 +80,14 @@ export function GroupList({
             {rows.length ? (
               rows.map((g, i) => (
                 <tr
-                  key={`${g.id ?? g.name}-${i}`}
+                  key={`${g.botId ?? ""}-${g.id ?? g.name}-${i}`}
                   onClick={() =>
                     g.id &&
                     setSel({
+                      botId: g.botId,
+                      botLabel: g.botLabel,
+                      botNumber: g.botNumber,
+                      botIndex: g.botId ? botIds.indexOf(g.botId) : 0,
                       kind: "group",
                       id: g.id,
                       name: g.name,
@@ -89,9 +102,16 @@ export function GroupList({
                   <td className={td}>
                     <div className="flex items-center gap-3">
                       <Avatar src={g.pp} name={g.name} alt={`${a.ppAlt}: ${g.name}`} />
-                      <button type="button" className="min-w-0 truncate text-left font-bold">
-                        {g.name}
-                      </button>
+                      <div className="min-w-0 text-left">
+                        <button type="button" className="block max-w-full truncate text-left font-bold">
+                          {g.name}
+                        </button>
+                        {multi && (
+                          <span className="mt-1 block">
+                            <BotBadge label={g.botLabel} number={g.botNumber} index={botIds.indexOf(g.botId ?? "")} />
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </td>
                   <td className={`${td} text-right tabular-nums`}>{fmt(g.members)}</td>
@@ -117,9 +137,7 @@ export function GroupList({
       <DetailDrawer
         target={sel}
         onClose={() => setSel(null)}
-        onToggled={(k, id, d) => {
-          onToggled(k, id, d);
-        }}
+        onToggled={onToggled}
         onSubscribed={onSubscribed}
       />
     </Panel>
@@ -128,10 +146,12 @@ export function GroupList({
 
 export function UserList({
   users,
+  botIds = [],
   onToggled,
   onSubscribed,
 }: {
   users: UserRow[];
+  botIds?: string[];
   onToggled: Toggled;
   onSubscribed: Subscribed;
 }) {
@@ -150,6 +170,7 @@ export function UserList({
         })
       : "-";
 
+  const multi = botIds.length > 1;
   const needle = q.trim().toLowerCase();
   const rows = users.filter(
     (u) => (u.name ?? "").toLowerCase().includes(needle) || u.number.includes(needle),
@@ -179,9 +200,13 @@ export function UserList({
                 const name = u.name || `+${u.number}`;
                 return (
                   <tr
-                    key={`${u.number}-${i}`}
+                    key={`${u.botId ?? ""}-${u.number}-${i}`}
                     onClick={() =>
                       setSel({
+                        botId: u.botId,
+                        botLabel: u.botLabel,
+                        botNumber: u.botNumber,
+                        botIndex: u.botId ? botIds.indexOf(u.botId) : 0,
                         kind: "user",
                         id: u.number,
                         name,
@@ -202,6 +227,11 @@ export function UserList({
                           <p className="font-mono text-[11px] tabular-nums text-ag-muted">
                             +{u.number}
                           </p>
+                          {multi && (
+                            <span className="mt-1 block">
+                              <BotBadge label={u.botLabel} number={u.botNumber} index={botIds.indexOf(u.botId ?? "")} />
+                            </span>
+                          )}
                         </div>
                       </div>
                     </td>
@@ -229,9 +259,7 @@ export function UserList({
       <DetailDrawer
         target={sel}
         onClose={() => setSel(null)}
-        onToggled={(k, id, d) => {
-          onToggled(k, id, d);
-        }}
+        onToggled={onToggled}
         onSubscribed={onSubscribed}
       />
     </Panel>

@@ -4,13 +4,19 @@ import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useLanguage } from "@/components/LanguageProvider";
-import { Avatar, Pill } from "@/components/admin/parts";
+import { Avatar, BotBadge, Pill } from "@/components/admin/parts";
 import { SubscriptionPanel, type SubInfo } from "@/components/admin/Subscription";
 
 export type DetailKind = "group" | "user";
 
 // Baris yang diklik di daftar: dipakai untuk tampilan awal selagi detail dimuat.
 export type DetailTarget = {
+  // MULTI-BOT: grup/user yang sama bisa ada di beberapa bot, jadi target
+  // selalu dikenali dari pasangan (botId, id).
+  botId?: string;
+  botLabel?: string | null;
+  botNumber?: string | null;
+  botIndex?: number;
   kind: DetailKind;
   id: string; // jid grup / nomor user
   name: string;
@@ -66,8 +72,8 @@ export function DetailDrawer({
 }: {
   target: DetailTarget | null;
   onClose: () => void;
-  onToggled: (kind: DetailKind, id: string, disabled: boolean) => void;
-  onSubscribed?: (kind: DetailKind, id: string, sub: SubInfo) => void;
+  onToggled: (kind: DetailKind, id: string, disabled: boolean, botId?: string) => void;
+  onSubscribed?: (kind: DetailKind, id: string, sub: SubInfo, botId?: string) => void;
 }) {
   const { t } = useLanguage();
   const a = t.admin;
@@ -80,7 +86,7 @@ export function DetailDrawer({
   const [toggleError, setToggleError] = useState<string | null>(null);
   const [sub, setSub] = useState<SubInfo | null>(null);
 
-  const key = target ? `${target.kind}:${target.id}` : null;
+  const key = target ? `${target.botId ?? ""}:${target.kind}:${target.id}` : null;
 
   // Muat detail setiap kali target berganti.
   useEffect(() => {
@@ -92,6 +98,7 @@ export function DetailDrawer({
     setSub(target.sub ?? null);
     const ctrl = new AbortController();
     const qs = new URLSearchParams({ type: target.kind, id: target.id });
+    if (target.botId) qs.set("botId", target.botId);
     fetch(`/api/detail?${qs}`, { cache: "no-store", signal: ctrl.signal })
       .then(async (r) => {
         const d = await r.json().catch(() => ({}));
@@ -130,12 +137,12 @@ export function DetailDrawer({
       const r = await fetch("/api/toggle", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: target.kind, id: target.id, enabled }),
+        body: JSON.stringify({ botId: target.botId, type: target.kind, id: target.id, enabled }),
       });
       const d = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(d.error || a.errToggle);
       setDisabled(!enabled);
-      onToggled(target.kind, target.id, !enabled);
+      onToggled(target.kind, target.id, !enabled, target.botId);
     } catch (e) {
       setToggleError((e as Error).message || a.errToggle);
     } finally {
@@ -216,6 +223,12 @@ export function DetailDrawer({
                       ? `${fmt(detail?.members ?? target.members ?? 0)} ${a.members}`
                       : `+${target.id}`}
                   </p>
+                  {target.botLabel && (
+                    <p className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-ag-muted">
+                      <span>{a.botManaged}:</span>
+                      <BotBadge label={target.botLabel} number={target.botNumber} index={target.botIndex} />
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -263,12 +276,13 @@ export function DetailDrawer({
 
               {/* Langganan (hitung mundur, data di Supabase) */}
               <SubscriptionPanel
+                botId={target.botId}
                 kind={target.kind}
                 id={target.id}
                 sub={sub}
                 onChange={(s) => {
                   setSub(s);
-                  onSubscribed?.(target.kind, target.id, s);
+                  onSubscribed?.(target.kind, target.id, s, target.botId);
                 }}
               />
 

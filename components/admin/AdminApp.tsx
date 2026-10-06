@@ -68,13 +68,16 @@ export function AdminApp() {
   }, []);
 
   // Setelah on/off berhasil, perbarui daftar langsung tanpa memuat ulang.
+  // MULTI-BOT: baris dicocokkan lewat (botId, id) -- grup yang sama di bot lain
+  // TIDAK ikut berubah.
   const onToggled = useCallback(
-    (kind: "group" | "user", id: string, disabled: boolean) => {
+    (kind: "group" | "user", id: string, disabled: boolean, botId?: string) => {
+      const same = (b?: string) => botId === undefined || b === botId;
       setData((d) =>
         d
           ? kind === "group"
-            ? { ...d, groups: d.groups?.map((g) => (g.id === id ? { ...g, disabled } : g)) }
-            : { ...d, users: d.users?.map((u) => (u.number === id ? { ...u, blocked: disabled } : u)) }
+            ? { ...d, groups: d.groups?.map((g) => (g.id === id && same(g.botId) ? { ...g, disabled } : g)) }
+            : { ...d, users: d.users?.map((u) => (u.number === id && same(u.botId) ? { ...u, blocked: disabled } : u)) }
           : d,
       );
     },
@@ -83,12 +86,13 @@ export function AdminApp() {
 
   // Setelah langganan diubah dari drawer, perbarui baris di daftar langsung.
   const onSubscribed = useCallback(
-    (kind: "group" | "user", id: string, sub: SubInfo) => {
+    (kind: "group" | "user", id: string, sub: SubInfo, botId?: string) => {
+      const same = (b?: string) => botId === undefined || b === botId;
       setData((d) =>
         d
           ? kind === "group"
-            ? { ...d, groups: d.groups?.map((g) => (g.id === id ? { ...g, sub } : g)) }
-            : { ...d, users: d.users?.map((u) => (u.number === id ? { ...u, sub } : u)) }
+            ? { ...d, groups: d.groups?.map((g) => (g.id === id && same(g.botId) ? { ...g, sub } : g)) }
+            : { ...d, users: d.users?.map((u) => (u.number === id && same(u.botId) ? { ...u, sub } : u)) }
           : d,
       );
     },
