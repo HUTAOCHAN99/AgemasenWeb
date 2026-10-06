@@ -1,6 +1,7 @@
 // Statistik PUBLIK untuk panel "Aktivitas Server" di halaman utama.
 // Beda dengan /api/stats (khusus admin): di sini tidak ada nama grup, nomor
 // user, atau data pribadi apa pun. Hanya angka agregat dari respons bot.
+const { getCommandStats } = require("../lib/commandLog");
 const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : null);
 
 module.exports = async (req, res) => {
@@ -34,7 +35,11 @@ module.exports = async (req, res) => {
           arch: sy.arch ? String(sy.arch).slice(0, 20) : null,
         }
       : null;
-    const top = Array.isArray(d.top) ? d.top.slice(0, 4) : [];
+    // today & top dibaca dari Supabase (command_log); jatuh balik ke angka bot.
+    const cmd = await getCommandStats();
+    const todayVal = cmd ? cmd.today : d.today;
+    const topSrc = cmd ? cmd.top : d.top;
+    const top = Array.isArray(topSrc) ? topSrc.slice(0, 4) : [];
 
     res.setHeader("Cache-Control", "public, s-maxage=5, stale-while-revalidate=10");
     res.json({
@@ -45,7 +50,7 @@ module.exports = async (req, res) => {
       sent: num(m.sent),
       sessionsActive: num(s.active),
       sessionsTotal: num(s.total),
-      today: num(d.today),
+      today: num(todayVal),
       uptimeSec: num(d.uptimeSec),
       system,
       load: d.system ? num(d.system.cpuPercent) : null,

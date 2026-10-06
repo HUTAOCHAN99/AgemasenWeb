@@ -1,6 +1,7 @@
 // Detail satu grup / satu user (khusus admin). Diteruskan ke endpoint bot
 // /group?id=... atau /user?number=...
 const { isAuthed } = require("../lib/auth");
+const { getChatCommandStats } = require("../lib/commandLog");
 
 module.exports = async (req, res) => {
   if (!isAuthed(req)) return res.status(401).json({ error: "Belum login." });
@@ -21,8 +22,12 @@ module.exports = async (req, res) => {
     });
     if (r.status === 404) return res.status(404).json({ error: "Data tidak ditemukan." });
     if (!r.ok) return res.status(502).json({ error: `Bot membalas ${r.status}.` });
+    const d = await r.json();
+    const cmd = await getChatCommandStats(id); // id = jid grup atau nomor user
+    if (cmd) d.commands = cmd;
+
     res.setHeader("Cache-Control", "no-store");
-    res.json(await r.json());
+    res.json(d);
   } catch {
     res.status(502).json({ error: "Bot tidak bisa dihubungi." });
   }
