@@ -18,8 +18,10 @@ export type FeatureKey =
   | "downloader"
   | "hd"
   | "search"
+  | "uma"
   | "articles"
-  | "chat";
+  | "chat"
+  | "tools";
 
 const id = {
   meta: {
@@ -94,7 +96,7 @@ const id = {
       sticker: {
         title: "Sticker & Meme",
         description:
-          "Ubah gambar atau video jadi stiker, tulis teks meme, atau bikin stiker chat dan brat.",
+          "Ubah gambar atau video jadi stiker, tulis teks meme, atau bikin stiker chat dan brat (termasuk yang animasi).",
       },
       downloader: {
         title: "Downloader",
@@ -109,15 +111,25 @@ const id = {
         description:
           "Cari dari Safebooru, Pinterest, dan Tenor tanpa keluar dari WhatsApp.",
       },
-      articles: {
-        title: "Articles & Summary",
+      uma: {
+        title: "Uma Musume",
         description:
-          "Cari artikel jurnal terbuka dan ringkas obrolan grup yang kelewat.",
+          "Cari trainer dan club Uma Musume, lihat rank threshold dan leaderboard circle.",
+      },
+      articles: {
+        title: "Articles & PDF Summary",
+        description:
+          "Ambil artikel jurnal terbuka dari link legal dan ringkas isi PDF dengan AI.",
       },
       chat: {
         title: "Tsundere Chat",
         description:
-          "Ngobrol dengan AI berkarakter tsundere yang ingat konteks obrolan.",
+          "Ngobrol dengan AI berkarakter tsundere yang ingat konteks obrolan dan isi PDF.",
+      },
+      tools: {
+        title: "Group & Settings",
+        description:
+          "Info grup, cek yang online, status bot, sisa langganan, dan ganti bahasa.",
       },
     } satisfies Record<FeatureKey, { title: string; description: string }>,
   },
@@ -437,7 +449,7 @@ const en: Dict = {
       sticker: {
         title: "Sticker & Meme",
         description:
-          "Turn images or videos into stickers, add meme captions, or make chat and brat stickers.",
+          "Turn images or videos into stickers, add meme captions, or make chat and brat stickers (animated ones too).",
       },
       downloader: {
         title: "Downloader",
@@ -452,15 +464,25 @@ const en: Dict = {
         description:
           "Search Safebooru, Pinterest, and Tenor without leaving WhatsApp.",
       },
-      articles: {
-        title: "Articles & Summary",
+      uma: {
+        title: "Uma Musume",
         description:
-          "Find open-access journal articles and summarize group chats you missed.",
+          "Look up Uma Musume trainers and clubs, plus circle rank thresholds and the leaderboard.",
+      },
+      articles: {
+        title: "Articles & PDF Summary",
+        description:
+          "Fetch open-access articles from legal links and summarize PDFs with AI.",
       },
       chat: {
         title: "Tsundere Chat",
         description:
-          "Chat with a tsundere AI character that remembers the context of your conversation.",
+          "Chat with a tsundere AI character that remembers your conversation and PDF contents.",
+      },
+      tools: {
+        title: "Group & Settings",
+        description:
+          "Group info, who's online, bot status, subscription time left, and language switching.",
       },
     },
   },
