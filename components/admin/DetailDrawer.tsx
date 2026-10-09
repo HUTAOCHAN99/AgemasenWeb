@@ -6,6 +6,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useLanguage } from "@/components/LanguageProvider";
 import { Avatar, BotBadge, Pill } from "@/components/admin/parts";
 import { SubscriptionPanel, type SubInfo } from "@/components/admin/Subscription";
+import { LanguagePanel, type LangInfo } from "@/components/admin/LanguagePanel";
 
 export type DetailKind = "group" | "user";
 
@@ -37,6 +38,7 @@ type Person = { name: string | null; number: string | null; super?: boolean };
 type Detail = {
   pp?: string | null;
   subscription?: SubInfo | null;
+  language?: LangInfo | null;
   disabled?: boolean;
   blocked?: boolean;
   name?: string | null;
@@ -85,6 +87,7 @@ export function DetailDrawer({
   const [saving, setSaving] = useState(false);
   const [toggleError, setToggleError] = useState<string | null>(null);
   const [sub, setSub] = useState<SubInfo | null>(null);
+  const [language, setLanguage] = useState<LangInfo | null>(null);
 
   const key = target ? `${target.botId ?? ""}:${target.kind}:${target.id}` : null;
 
@@ -96,6 +99,7 @@ export function DetailDrawer({
     setToggleError(null);
     setDisabled(target.disabled);
     setSub(target.sub ?? null);
+    setLanguage(null);
     const ctrl = new AbortController();
     const qs = new URLSearchParams({ type: target.kind, id: target.id });
     if (target.botId) qs.set("botId", target.botId);
@@ -106,6 +110,7 @@ export function DetailDrawer({
         setDetail(d);
         setDisabled(!!(d.disabled ?? d.blocked));
         setSub(d.subscription ?? null);
+        setLanguage(d.language ?? null);
       })
       .catch((e: Error) => {
         if (e.name !== "AbortError") setLoadError(e.message || a.errDetail);
@@ -285,6 +290,17 @@ export function DetailDrawer({
                   onSubscribed?.(target.kind, target.id, s, target.botId);
                 }}
               />
+
+              {/* Bahasa bot (data dari bot, jadi muncul setelah detail termuat) */}
+              {language && (
+                <LanguagePanel
+                  botId={target.botId}
+                  kind={target.kind}
+                  id={target.id}
+                  info={language}
+                  onChange={setLanguage}
+                />
+              )}
 
               {loadError ? (
                 <p role="alert" className="mt-8 text-sm font-semibold text-ag-pink">
