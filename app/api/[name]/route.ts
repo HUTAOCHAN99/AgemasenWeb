@@ -7,6 +7,8 @@ import language from "../../../api/language.js";
 import login from "../../../api/login.js";
 import logout from "../../../api/logout.js";
 import pulse from "../../../api/pulse.js";
+import qr from "../../../api/qr.js";
+import session from "../../../api/session.js";
 import stats from "../../../api/stats.js";
 import subscription from "../../../api/subscription.js";
 import toggle from "../../../api/toggle.js";
@@ -27,7 +29,7 @@ type LegacyRes = {
 };
 type LegacyHandler = (req: LegacyReq, res: LegacyRes) => unknown;
 
-const handlers: Record<string, LegacyHandler> = { login, logout, stats, pulse, detail, toggle, subscription, language };
+const handlers: Record<string, LegacyHandler> = { login, logout, stats, pulse, detail, toggle, subscription, language, qr, session };
 
 async function handle(
   request: NextRequest,

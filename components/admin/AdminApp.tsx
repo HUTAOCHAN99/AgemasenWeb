@@ -6,14 +6,18 @@ import { useLanguage } from "@/components/LanguageProvider";
 import { Navbar, type AdminNav } from "@/components/Navbar";
 import { Dashboard, type Stats, type Tab } from "@/components/admin/Dashboard";
 import { LoginCard } from "@/components/admin/LoginCard";
+import { QrPanel } from "@/components/admin/QrPanel";
 import type { SubInfo } from "@/components/admin/Subscription";
 
 type View = "checking" | "login" | "dash";
 
-const TABS: readonly Tab[] = ["overview", "system", "groups", "users"];
-const tabFromHash = (): Tab => {
+// "qr" berdiri sendiri (tidak lewat Dashboard) supaya tetap bisa dipakai
+// saat bot belum login / /api/stats belum bisa memuat data.
+type AdminTab = Tab | "qr";
+const TABS: readonly AdminTab[] = ["overview", "system", "groups", "users", "qr"];
+const tabFromHash = (): AdminTab => {
   const h = window.location.hash.slice(1);
-  return (TABS as readonly string[]).includes(h) ? (h as Tab) : "overview";
+  return (TABS as readonly string[]).includes(h) ? (h as AdminTab) : "overview";
 };
 
 // Satu-satunya yang menentukan tampilan: sudah login atau belum ditentukan oleh
@@ -23,7 +27,7 @@ export function AdminApp() {
   const [view, setView] = useState<View>("checking");
   const [data, setData] = useState<Stats | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [tab, setTab] = useState<Tab>("overview");
+  const [tab, setTab] = useState<AdminTab>("overview");
 
   // Menu admin = hash URL (#groups, #users, ...), jadi bisa di-bookmark dan
   // tombol back/forward browser tetap berfungsi.
@@ -121,6 +125,7 @@ export function AdminApp() {
             { key: "system", label: t.admin.navSystem },
             { key: "groups", label: t.admin.navGroups },
             { key: "users", label: t.admin.navUsers },
+            { key: "qr", label: t.admin.navQr },
           ]
         : [],
     active: tab,
@@ -143,6 +148,8 @@ export function AdminApp() {
     );
   } else if (view === "login") {
     content = <LoginCard onLogin={load} />;
+  } else if (tab === "qr") {
+    content = <QrPanel onUnauthorized={() => setView("login")} />;
   } else {
     content = <Dashboard
         data={data}
